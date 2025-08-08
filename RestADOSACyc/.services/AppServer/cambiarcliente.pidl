@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pidl:description targetNamespace="urn:schemas-progress-com:bpm:appserverbinding:0001" serviceType="wsad:OEAppServerInvoke" xmlns:wsad="urn:schemas-progress-com:bpm:appserverbinding:0001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pidl="http://www.progress.com/caf/idl1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:java="http://www.progress.com/adapters/idl1.0/javatype">
+<pidl:types>
+</pidl:types>
+  <pidl:interface name="com.progress.openedge.pdt.bpminterfaces">
+    <pidl:operation name="cambiarcliente..p-CambiaCliente" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:input messageLabel="ClienteNuevo" req="false" type="java:Integer">
+    </pidl:input>
+      <pidl:input messageLabel="IdUsuario" req="false" type="java:String">
+    </pidl:input>
+      <pidl:input messageLabel="Rec" req="false" type="java:Integer">
+    </pidl:input>
+      <pidl:input messageLabel="Nivel" req="false" type="java:Integer">
+    </pidl:input>
+      <pidl:output messageLabel="Respuesta" req="false" type="java:String">
+    </pidl:output>
+    </pidl:operation>
+  </pidl:interface>
+  <pidl:binding name="com.progress.openedge.pdt.bpmbindings" interface="wsad:com.progress.openedge.pdt.bpminterfaces" type="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<wsad:Operation isPersistent="false" useFullName="false" executionMode="9">
+<wsad:Name>cambiarcliente</wsad:Name><wsad:ProcPath></wsad:ProcPath><wsad:ProPath></wsad:ProPath><wsad:ProcExt>p</wsad:ProcExt><wsad:ProcDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true" IsMappedToSubmit="false"><wsad:Name>cambiarcliente</wsad:Name><wsad:HelpString></wsad:HelpString><wsad:InternalProc isExcluded="false" hasBadParams="false"><wsad:Name>p-CambiaCliente</wsad:Name><wsad:ProcType>1</wsad:ProcType><wsad:MethodDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="false" IsMappedToSubmit="false"><wsad:Name>p-CambiaCliente</wsad:Name><wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false"><wsad:Name>ClienteNuevo</wsad:Name><wsad:OrigName>ClienteNuevo</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="2" writeXmlBeforeImage="false"><wsad:Name>IdUsuario</wsad:Name><wsad:OrigName>IdUsuario</wsad:OrigName><wsad:Type>1</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="3" writeXmlBeforeImage="false"><wsad:Name>Rec</wsad:Name><wsad:OrigName>Rec</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="4" writeXmlBeforeImage="false"><wsad:Name>Nivel</wsad:Name><wsad:OrigName>Nivel</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="5" writeXmlBeforeImage="false"><wsad:Name>Respuesta</wsad:Name><wsad:OrigName>Respuesta</wsad:OrigName><wsad:Type>1</wsad:Type><wsad:Mode>2</wsad:Mode></wsad:Parameter></wsad:MethodDetail></wsad:InternalProc></wsad:ProcDetail></wsad:Operation>  </pidl:binding>
+</pidl:description>

@@ -1,0 +1,227 @@
+/*
+  Empresa: Abastecedora de Oficinas
+  Sistema: Adosa
+  Modulo : Ventas
+
+  Programa: vtaa0001.i
+  Funcion: Compromete Inventario
+  Usado por: vtaa0120.p y otros
+
+  Autor: DCH
+  Fecha: Noviembre
+*/
+/*
+  &Articulo = Id-Articulo
+  &Color    = Id-Color
+  &Pres     = Id-Pres
+  &Pedido   = Id-Pedido
+  &Seq      = Id-Seq
+  &Cant     = Cantidad de la Presentacion (No en UMI's)
+  &UbiVta   = Pedido.Id-UbiVta
+  &Div      = Articulo.Id-Div
+  &Costo    = Costo del articulo
+  &Prov     = Proveedor del articulo
+  &b1       = Prefijo del Buffer para cuando sea necesario (artPres)
+  &b2       = Prefijo del Buffer para cuando sea necesario (MovPedido)
+*/
+
+{ifndef {&NoVars}}
+DEF VAR cx_alma AS CHARACTER NO-UNDO.
+DEF VAR cx_i AS INTEGER NO-UNDO.
+DEF VAR cx_resto LIKE DetPedido.CantPed NO-UNDO.
+DEF VAR cx_cant LIKE DetPedido.CantPed NO-UNDO.
+DEF VAR cx_mensaje AS CHAR NO-UNDO.
+DEF VAR cx_exist AS CHARACTER NO-UNDO.
+DEF VAR cx_indice AS INTEGER NO-UNDO.
+DEF VAR cx_reng AS INTEGER NO-UNDO.
+DEF VAR cx_seq AS INTEGER NO-UNDO.
+DEF VAR cx_cantped LIKE DetPedido.CantPed NO-UNDO.
+DEF VAR cx_restoped LIKE DetPedido.CantPed NO-UNDO.
+DEF VAR cx_principal AS CHARACTER NO-UNDO.
+DEF VAR cx_prin AS CHARACTER NO-UNDO.
+DEF VAR cx_BOAnt LIKE DetPedido.CantBO NO-UNDO.
+DEF VAR cx_CantComAnt LIKE DetPedido.CantCom NO-UNDO.
+{endif} */
+   
+{ifndef {&nobuff}}
+DEF BUFFER cx_DetPedido FOR DetPedido.
+{endif} */
+
+Compromete:
+DO:
+  cx_mensaje = "".
+  /* Primero valida que el articulo exista en el almacen */
+  IF {&b1}Pedido.Id-Alm <> '' THEN DO:
+          FIND {&b1}ArtUbic WHERE {&b1}ArtUbic.Id-Articulo = {&Articulo}
+                              AND {&b1}ArtUbic.Id-Color = {&Color}
+                              AND {&b1}ArtUbic.Id-Alm = {&b1}Pedido.Id-Alm NO-LOCK NO-ERROR.
+          IF PROGRAM-NAME(1) MATCHES "*vta*125*" THEN DO:
+              IF NOT AVAILABLE {&b1}ArtUbic THEN DO:
+                  CREATE {&b1}ArtUbic.
+                  ASSIGN
+                      {&b1}ArtUbic.Id-Articulo = {&Articulo}
+                      {&b1}ArtUbic.Id-Color = {&Color}
+                      {&b1}ArtUbic.Id-Alm = {&b1}Pedido.Id-Alm
+                      {&b1}ArtUbic.PedirA = "A".
+              END.
+          END.
+          ELSE DO:
+              IF NOT AVAILABLE {&b1}ArtUbic THEN DO:
+                 cx_mensaje = "La relacion Articulo Presentacion no existe".
+                 BELL.
+                 MESSAGE cx_mensaje.
+                 LEAVE compromete.
+              END.
+          END.
+  END.
+  
+  FIND {&b1}ArtPres WHERE {&b1}ArtPres.Id-Articulo = {&Articulo}
+                      AND {&b1}ArtPres.Id-Pres = {&Pres} NO-LOCK NO-ERROR.
+  IF NOT AVAILABLE {&b1}ArtPres THEN DO:
+     cx_mensaje = "La relacion Articulo Presentacion no existe".
+     BELL.
+     MESSAGE cx_mensaje.
+     LEAVE compromete.
+  END.
+  IF {&b1}ArtPres.SiDec = False
+      AND ({&Cant} - TRUNCATE({&Cant},0) <> 0) THEN DO:
+     cx_mensaje = "NO SE PERMITEN DECIMALES EN ESTA PRESENTACION.".
+     BELL.
+     MESSAGE cx_mensaje.
+     LEAVE compromete.
+  END.
+
+  ASSIGN cx_alma      = "" /* Lista de Prioridades de Almacen */
+         cx_i         = 0 /* Vil Contador */
+         cx_cant      = {&Cant} * {&b1}ArtPres.Equiv /* Cant. Pedida en UMI */
+         cx_resto     = cx_cant /* Cantidad restante en UMIS */
+         cx_exist     = ""
+         cx_indice    = 0
+         cx_reng      = 0 /* Contador para respetar el acomodo del registro */
+         cx_seq       = 0 /* Contador para tener el mismo art en varios reng */
+         cx_cantped   = {&Cant} * {&b1}ArtPres.Equiv
+                        /* CantCom en Unidad Original */
+         cx_restoped  = {&Cant} * {&b1}ArtPres.Equiv
+                        /* Cantidad Restante en Unidad Original */
+         cx_principal = "" /* Almacen definido como principal en Venta */
+         cx_prin      = "" /* Almacen definido como principal en Venta */
+         cx_CantComAnt = {&b2}DetPedido.CantCom.
+
+  IF cx_cant = 0 THEN DO:
+    cx_mensaje = "La cantidad pedida es equivalente a 0 piezas".
+    LEAVE Compromete.
+  END.
+
+  IF {&b1}Pedido.Id-Alm = '' THEN DO:
+          IF {&b1}Pedido.Enviar = FALSE THEN DO:
+            IF {salt0005.i} = "MATRIZ" THEN DO:
+                  ASSIGN cx_principal = '03A'
+                         cx_alma      = '03A'.
+            END.
+            ELSE
+                ASSIGN cx_principal = '11'
+                       cx_alma      = '11'.
+          END.
+          ELSE DO:
+            IF {salt0005.i} = "MATRIZ" THEN 
+                ASSIGN cx_principal = '02B'
+                       cx_alma      = '02B'.
+            ELSE
+                ASSIGN cx_principal = '11'
+                       cx_alma      = '11'.
+          END.
+  END.
+  ELSE DO:
+          ASSIGN cx_principal = {&b1}Pedido.Id-Alm
+                 cx_alma      = {&b1}Pedido.Id-Alm.
+  END.
+  IF cx_alma = "" THEN DO:
+     cx_mensaje = "Almacen no definido para este Tipo de Articulo".
+     BELL.
+     MESSAGE cx_mensaje .
+     LEAVE compromete.
+  END.
+  
+  blk-uno:
+  DO cx_i = 1 TO NUM-ENTRIES(cx_alma) :
+     FIND Almacen WHERE Almacen.Id-Alm = ENTRY(cx_i,cx_alma) NO-LOCK NO-ERROR.
+     IF NOT AVAILABLE Almacen THEN NEXT.
+     
+     {ifndef {&NoExAlt}}
+     ASSIGN {&b2}DetPedido.ExistAlta = 0.
+     if cx_alma = '02B' then do:
+        FOR EACH ArtUbic WHERE ArtUbic.Id-Articulo = {&Articulo}
+                           AND ArtUbic.Id-Color = {&Color}
+                           AND (ArtUbic.Id-Alm = '02B' OR ArtUbic.Id-Alm = '02A')
+                           AND ArtUbic.Exist > 0 NO-LOCK:
+            ASSIGN {&b2}DetPedido.ExistAlta = {&b2}DetPedido.ExistAlta + ArtUbic.Exist.
+        END.
+     END.
+     else do:
+        for each ArtUbic WHERE ArtUbic.Id-Articulo = {&Articulo} AND
+                                ArtUbic.Id-Color = {&Color} AND
+                                ArtUbic.Id-Alm = entry(cx_i,cx_alma) NO-LOCK:
+                ASSIGN {&b2}DetPedido.ExistAlta = ArtUbic.Exist.
+        END.
+     end.
+     {endif} */
+
+     FIND ArtUbic WHERE ArtUbic.Id-Articulo = {&Articulo} AND
+                        ArtUbic.Id-Color = {&Color} AND
+                        ArtUbic.Id-Alm = ENTRY(cx_i,cx_alma)
+                        EXCLUSIVE-LOCK NO-ERROR.
+     IF NOT AVAILABLE ArtUbic THEN NEXT.
+
+     FIND Articulo WHERE Articulo.Id-Articulo = {&b2}DetPedido.Id-Articulo
+                   NO-LOCK NO-ERROR.
+     FIND ArtCol WHERE ArtCol.Id-Articulo = {&b2}DetPedido.Id-Articulo
+                   AND ArtCol.Id-Color = {&Color} NO-LOCK NO-ERROR.
+
+      IF ((AVAILABLE Articulo AND Articulo.Id-TipoArt = "S") OR
+          (AVAILABLE ArtCol AND ArtCol.Id-TipoArt = "S")) AND
+         ArtUbic.exist < ({&Cant} * {&b1}ArtPres.Equiv) THEN DO:
+        BELL.
+        MESSAGE COLOR MESSAGE
+                "Articulo sobre pedido, favor de contactar al departamento de"
+                SKIP
+                "compras para su solicitud y avisar al cliente de su posible"
+                SKIP
+                "fecha de entraga"
+        VIEW-AS ALERT-BOX TITLE 'AVISO!'.
+      END.
+
+      IF NOT PROGRAM-NAME(2) MATCHES "*cxcd*" THEN DO:
+        IF ArtUbic.exist < ({&Cant} * {&b1}ArtPres.Equiv) AND
+           (Pedido.BckOrd = 3 OR Pedido.BckOrd = 4) THEN DO:
+          BELL.
+          MESSAGE COLOR MESSAGE
+                  "No hay existencia suficiente,"
+                  SKIP
+                  "pedido con tipo de backorder:"
+                  SKIP
+                  IF Pedido.BckOrd = 3 THEN "ENVIAR HASTA QUE ESTE COMPLETO"
+                  ELSE "ENVIAR COMPLETO O CANCELAR"
+          VIEW-AS ALERT-BOX TITLE 'AVISO!'.
+        END.
+      END.
+
+      ASSIGN {&b2}DetPedido.Id-Alm = ArtUbic.Id-Alm
+             {&b2}DetPedido.FecReg = TODAY
+             {&b2}DetPedido.FecAct = TODAY
+             {&b2}DetPedido.Hora   = TIME
+             {&b2}DetPedido.CantCom = /*IF Pedido.Adelantado = TRUE THEN 0 ELSE*/ cx_cantped.
+      ASSIGN ArtUbic.Exist  = ArtUbic.Exist - {&b2}DetPedido.CantCom + cx_CantComAnt
+             ArtUbic.Compro = ArtUbic.Compro + {&b2}DetPedido.CantCom - cx_CantComAnt.
+ 
+     RELEASE ArtUbic.
+     LEAVE blk-uno.
+  END.
+
+ IF {&b2}DetPedido.Id-Alm = "" THEN DO:
+    ASSIGN {&b2}DetPedido.Id-Alm = IF cx_principal <> "" 
+                                   THEN cx_principal
+                                   ELSE IF {salt0005.i} = "SALTILLO" 
+                                        THEN "11" ELSE "03A".
+ END.
+
+END.

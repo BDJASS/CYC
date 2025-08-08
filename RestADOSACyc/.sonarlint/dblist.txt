@@ -1,0 +1,2 @@
+1734343155790
+C:\Users\sis10\Progress\Developer Studio 12.8\workspace\RestADOSACyc\.sonarlint/adosa.schema

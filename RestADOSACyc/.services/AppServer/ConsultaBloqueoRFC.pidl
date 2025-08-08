@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pidl:description targetNamespace="urn:schemas-progress-com:bpm:appserverbinding:0001" serviceType="wsad:OEAppServerInvoke" xmlns:wsad="urn:schemas-progress-com:bpm:appserverbinding:0001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pidl="http://www.progress.com/caf/idl1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:java="http://www.progress.com/adapters/idl1.0/javatype">
+<pidl:types>
+</pidl:types>
+  <pidl:interface name="com.progress.openedge.pdt.bpminterfaces">
+    <pidl:operation name="ConsultaBloqueoRFC..ConsultaBloqueoRFC" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:output messageLabel="ttBloqueoRFC" req="false" type="java:Object">
+    </pidl:output>
+    </pidl:operation>
+    <pidl:operation name="ConsultaBloqueoRFC..EliminarBloqueoRFC" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:input messageLabel="RFC" req="false" type="java:String">
+    </pidl:input>
+      <pidl:output messageLabel="Respuesta" req="false" type="java:String">
+    </pidl:output>
+    </pidl:operation>
+  </pidl:interface>
+  <pidl:binding name="com.progress.openedge.pdt.bpmbindings" interface="wsad:com.progress.openedge.pdt.bpminterfaces" type="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<wsad:Operation isPersistent="false" useFullName="false" executionMode="9">
+<wsad:Name>ConsultaBloqueoRFC</wsad:Name><wsad:ProcPath></wsad:ProcPath><wsad:ProPath></wsad:ProPath><wsad:ProcExt>p</wsad:ProcExt><wsad:ProcDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true" IsMappedToSubmit="false"><wsad:Name>ConsultaBloqueoRFC</wsad:Name><wsad:HelpString></wsad:HelpString><wsad:InternalProc isExcluded="false" hasBadParams="false"><wsad:Name>ConsultaBloqueoRFC</wsad:Name><wsad:ProcType>1</wsad:ProcType><wsad:MethodDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="false" IsMappedToSubmit="false"><wsad:Name>ConsultaBloqueoRFC</wsad:Name><wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false"><wsad:Name>ttBloqueoRFC</wsad:Name><wsad:OrigName>ttBloqueoRFC</wsad:OrigName><wsad:Type>15</wsad:Type><wsad:Mode>2</wsad:Mode><wsad:NamespaceUri xsi:nil="true"></wsad:NamespaceUri><wsad:MetaData><wsad:FieldName>RFC</wsad:FieldName><wsad:Type>1</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>CHARACTER</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData><wsad:MetaData><wsad:FieldName>FechaDeBloqueo</wsad:FieldName><wsad:Type>2</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>DATE</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData><wsad:MetaData><wsad:FieldName>ResponsableDeBloqueo</wsad:FieldName><wsad:Type>1</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>CHARACTER</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData><wsad:MetaData><wsad:FieldName>Motivo</wsad:FieldName><wsad:Type>1</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>CHARACTER</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData></wsad:Parameter></wsad:MethodDetail></wsad:InternalProc><wsad:InternalProc isExcluded="false" hasBadParams="false"><wsad:Name>EliminarBloqueoRFC</wsad:Name><wsad:ProcType>1</wsad:ProcType><wsad:MethodDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="false" IsMappedToSubmit="false"><wsad:Name>EliminarBloqueoRFC</wsad:Name><wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false"><wsad:Name>RFC</wsad:Name><wsad:OrigName>RFC</wsad:OrigName><wsad:Type>1</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="2" writeXmlBeforeImage="false"><wsad:Name>Respuesta</wsad:Name><wsad:OrigName>Respuesta</wsad:OrigName><wsad:Type>1</wsad:Type><wsad:Mode>2</wsad:Mode></wsad:Parameter></wsad:MethodDetail></wsad:InternalProc></wsad:ProcDetail></wsad:Operation>  </pidl:binding>
+</pidl:description>

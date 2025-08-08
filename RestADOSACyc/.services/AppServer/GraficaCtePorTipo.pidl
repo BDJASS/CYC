@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pidl:description targetNamespace="urn:schemas-progress-com:bpm:appserverbinding:0001" serviceType="wsad:OEAppServerInvoke" xmlns:wsad="urn:schemas-progress-com:bpm:appserverbinding:0001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pidl="http://www.progress.com/caf/idl1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:java="http://www.progress.com/adapters/idl1.0/javatype">
+<pidl:types>
+</pidl:types>
+  <pidl:interface name="com.progress.openedge.pdt.bpminterfaces">
+    <pidl:operation name="GraficaCtePorTipo..GetClientes" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:input messageLabel="Clase" req="false" type="java:Integer">
+    </pidl:input>
+      <pidl:input messageLabel="IdTipoCliente" req="false" type="java:Integer">
+    </pidl:input>
+      <pidl:output messageLabel="ClientesPorTipo" req="false" type="java:Object">
+    </pidl:output>
+    </pidl:operation>
+  </pidl:interface>
+  <pidl:binding name="com.progress.openedge.pdt.bpmbindings" interface="wsad:com.progress.openedge.pdt.bpminterfaces" type="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<wsad:Operation isPersistent="false" useFullName="false" executionMode="9">
+<wsad:Name>GraficaCtePorTipo</wsad:Name><wsad:ProcPath></wsad:ProcPath><wsad:ProPath></wsad:ProPath><wsad:ProcExt>p</wsad:ProcExt><wsad:ProcDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true" IsMappedToSubmit="false"><wsad:Name>GraficaCtePorTipo</wsad:Name><wsad:HelpString></wsad:HelpString><wsad:InternalProc isExcluded="false" hasBadParams="false"><wsad:Name>GetClientes</wsad:Name><wsad:ProcType>1</wsad:ProcType><wsad:MethodDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="false" IsMappedToSubmit="false"><wsad:Name>GetClientes</wsad:Name><wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false"><wsad:Name>Clase</wsad:Name><wsad:OrigName>Clase</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="2" writeXmlBeforeImage="false"><wsad:Name>IdTipoCliente</wsad:Name><wsad:OrigName>IdTipoCliente</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="3" writeXmlBeforeImage="false"><wsad:Name>ClientesPorTipo</wsad:Name><wsad:OrigName>ClientesPorTipo</wsad:OrigName><wsad:Type>15</wsad:Type><wsad:Mode>2</wsad:Mode><wsad:NamespaceUri xsi:nil="true"></wsad:NamespaceUri><wsad:MetaData><wsad:FieldName>TotalCredito</wsad:FieldName><wsad:Type>4</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>INTEGER</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData><wsad:MetaData><wsad:FieldName>TotalContado</wsad:FieldName><wsad:Type>4</wsad:Type><wsad:Extent>0</wsad:Extent><wsad:TypeName>INTEGER</wsad:TypeName><wsad:XmlNodeType>0</wsad:XmlNodeType></wsad:MetaData></wsad:Parameter></wsad:MethodDetail></wsad:InternalProc></wsad:ProcDetail></wsad:Operation>  </pidl:binding>
+</pidl:description>

@@ -1,0 +1,7 @@
+/*
+  Programa: sia00001.var
+  Funcion : variable para la s-empresa
+*/
+
+
+DEF SHARED VAR s-empresa AS INTE FORMAT ">>9" NO-UNDO.

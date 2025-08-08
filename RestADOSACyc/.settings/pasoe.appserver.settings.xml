@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module-content version="12.8">
+    <module id="763d90fe-231d-4a8a-941c-aea798889390" name="RestADOSACyc">
+        <resource path="AppServer" publish="true"/>
+    </module>
+</module-content>

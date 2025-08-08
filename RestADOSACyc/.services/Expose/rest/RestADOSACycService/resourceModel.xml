@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_Saldo" path="/Saldo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/saldocxc.pidl::com.progress.openedge.pdt.bpmbindings" name="saldocxc..GetSaldos" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CarteraVisor" path="/CarteraVisor" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/carteractevisor.pidl::com.progress.openedge.pdt.bpmbindings" name="carteractevisor..GetCartera" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Estatus" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Deposito" path="/Deposito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/deposito.pidl::com.progress.openedge.pdt.bpmbindings" name="deposito..GetDeposito" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DepositoResp" path="/DepositoResp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depositoR.pidl::com.progress.openedge.pdt.bpmbindings" name="depositoR..GetDeposito" produces="application/json" verb="GET">
+      <prgs:param name="Mes" type="QUERY"/>
+      <prgs:param name="Year" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoNoAut" path="/PedidoNoAut" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pednoaut.pidl::com.progress.openedge.pdt.bpmbindings" name="pednoaut..GetPedidos" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Prueba" path="/Prueba" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/prueba.pidl::com.progress.openedge.pdt.bpmbindings" name="prueba..GetPrueba" produces="application/json" verb="GET">
+      <prgs:param name="PUser" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DepositoVisor" path="/DepositoVisor" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depvisor.pidl::com.progress.openedge.pdt.bpmbindings" name="depvisor..GetDepositos" produces="application/json" verb="GET">
+      <prgs:param name="Mes" type="QUERY"/>
+      <prgs:param name="Year" type="QUERY"/>
+      <prgs:param name="Aplicado" type="QUERY"/>
+      <prgs:param name="Nivel" type="QUERY"/>
+      <prgs:param name="Tipo" type="QUERY"/>
+      <prgs:param name="Activo" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoAnual" path="/PedidoAnual" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/estpedanual.pidl::com.progress.openedge.pdt.bpmbindings" name="estpedanual..GetPedidoAnual" produces="application/json" verb="GET">
+      <prgs:param name="user" type="QUERY"/>
+      <prgs:param name="year" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SaldoResponsable" path="/SaldoResponsable" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/saldocardresp.pidl::com.progress.openedge.pdt.bpmbindings" name="saldocardresp..GetCardResponsables" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoNoAutDir" path="/PedidoNoAutDir" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pednoautdir.pidl::com.progress.openedge.pdt.bpmbindings" name="pednoautdir..GetPedidoDirector" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoAnualDir" path="/PedidoAnualDir" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/estpedanualdir.pidl::com.progress.openedge.pdt.bpmbindings" name="estpedanualdir..GetPedidoAnualDir" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Year" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidosPenAut" path="/PedidosPenAut" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/PedidoPorAutVisor.pidl::com.progress.openedge.pdt.bpmbindings" name="PedidoPorAutVisor..GetPedPorAutVisor" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CarteraGraResp" path="/CarteraGraResp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/carteragraresp.pidl::com.progress.openedge.pdt.bpmbindings" name="carteragraresp..GetCarteraResp" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CarteraGraCliente" path="/CarteraGraCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/carteragracte.pidl::com.progress.openedge.pdt.bpmbindings" name="carteragracte..GetCarteraResp" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RFiscal" path="/RFiscal" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoRFiscal.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoRFiscal..GetRFiscal" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GiroCte" path="/GiroCte" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoGiroCte.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoGiroCte..GetGiroCte" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Pais" path="/Pais" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoPais.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoPais..GetPais" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Estado" path="/Estado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoEstado.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoEstado..GetEstado" produces="application/json" verb="GET">
+      <prgs:param name="IdPais" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Ciudad" path="/Ciudad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoCiudad.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoCiudad..GetCiudad" produces="application/json" verb="GET">
+      <prgs:param name="IdEstado" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Ramo" path="/Ramo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoRamo.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoRamo..GetRamo" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RamoGiroCte" path="/RamoGiroCte" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/Ramogirocte.pidl::com.progress.openedge.pdt.bpmbindings" name="Ramogirocte..GetGiroCte" produces="application/json" verb="GET">
+      <prgs:param name="IdRamo" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GiroCteSegmentoCte" path="/GiroCteSegmentoCte" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/GiroCteSegmentoCte.pidl::com.progress.openedge.pdt.bpmbindings" name="GiroCteSegmentoCte..GetSegmentoCte" produces="application/json" verb="GET">
+      <prgs:param name="IdSegmentoCte" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_UsoCFDI" path="/UsoCFDI" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoUsoCFDI.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoUsoCFDI..GetUsoCFDI" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DocumentoPDF" path="/DocumentoContado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/DocContado.pidl::com.progress.openedge.pdt.bpmbindings" name="DocContado..ObtenerDocumentos" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/DocContado.pidl::com.progress.openedge.pdt.bpmbindings" name="DocContado..GuardarDocumento" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteContado" path="/ClienteContado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteContado.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteContado..CreaClientes" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteContado.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteContado..GetVerCliente" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoAutCanRec" path="/PedidoAutCanRec" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pedaut.pidl::com.progress.openedge.pdt.bpmbindings" name="pedaut..GetPedidos" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GestionCteContado" path="/GestionCteContado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/GestionCteContado.pidl::com.progress.openedge.pdt.bpmbindings" name="GestionCteContado..GetClientes" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GestionCteConGraSegmento" path="/GestionCteConGraSegmento" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/GestionCteContadoSeg.pidl::com.progress.openedge.pdt.bpmbindings" name="GestionCteContadoSeg..GetSegmento" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_TipoCliente" path="/TipoCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoTipoCliente.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoTipoCliente..GetTipoCliente" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_PedidoEmpMes" path="/PedidoEmpMes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..GetPorAut" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Nivel" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PostAutorizador" produces="application/json" verb="POST">
+      <prgs:param name="Autoriza" type="QUERY"/>
+      <prgs:param name="User" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PutAutorizarPedido" produces="application/json" verb="PUT">
+      <prgs:param name="Pedido" type="QUERY"/>
+      <prgs:param name="Segunda" type="QUERY"/>
+      <prgs:param name="Todos" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+      <prgs:param name="Importe" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..RechazaPedido" produces="application/json" verb="DELETE">
+      <prgs:param name="Pedido" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FiltrarClientes" path="/FiltrarClientes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/FiltrarClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="FiltrarClientes..FiltrarClientes" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Activo" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Banco" path="/Banco" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoBanco.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoBanco..GetBanco" produces="application/json" verb="GET">
+      <prgs:param name="IdBanco" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoChequera" path="/ClienteCreditoChequera" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteBancos.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteBancos..ConsultarBancosCliente" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteBancos.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteBancos..AsignarBancosCliente" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteBancos.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteBancos..DeleteBancos" produces="application/json" verb="DELETE"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_GestionCteRFC" path="/GestionCteRFC" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ConsultaBloqueoRFC.pidl::com.progress.openedge.pdt.bpmbindings" name="ConsultaBloqueoRFC..ConsultaBloqueoRFC" produces="application/json" verb="GET"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ConsultaBloqueoRFC.pidl::com.progress.openedge.pdt.bpmbindings" name="ConsultaBloqueoRFC..EliminarBloqueoRFC" produces="application/json" verb="POST">
+      <prgs:param name="RFC" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Asociado" path="/Asociado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoAsociado.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoAsociado..BuscarAsociados" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteBloqueo" path="/ClienteBloqueo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteBloqueo.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteBloqueo..GetClienteBloqueo" produces="application/json" verb="GET">
+      <prgs:param name="NumCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteBloqueo.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteBloqueo..PostBloqueoCliente" produces="application/json" verb="POST">
+      <prgs:param name="NumCliente" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+      <prgs:param name="RFC" type="QUERY"/>
+      <prgs:param name="BloqueoRFC" type="QUERY"/>
+      <prgs:param name="BloqueoCliente" type="QUERY"/>
+      <prgs:param name="Motivo" type="QUERY"/>
+      <prgs:param name="Asociados" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_InactivarClientes" path="/InactivarClientes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/InactivarClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="InactivarClientes..GetInactivarCliente" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/InactivarClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="InactivarClientes..PostInactivarCliente" produces="application/json" verb="POST">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+      <prgs:param name="Motivo" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ActivarClientes" path="/ActivarClientes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ActivarClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="ActivarClientes..GetActivarCliente" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ActivarClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="ActivarClientes..PostActivarCliente" produces="application/json" verb="POST">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Usuario" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_HistorialCrediticio" path="/HistorialCrediticio" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/HistorialCrediticio.pidl::com.progress.openedge.pdt.bpmbindings" name="HistorialCrediticio..GetHistorialCrediticio" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteDesbloqueado" path="/ClienteDesbloqueado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteDesbloqueo.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteDesbloqueo..PostDesbloquear" produces="application/json" verb="POST">
+      <prgs:param name="NumCliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoAgenda" path="/ClienteCreditoAgenda" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAgenda.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAgenda..ConsultarSeguimiento" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAgenda.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAgenda..GuardarSeguimientos" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAgenda.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAgenda..DeleteAgenda" produces="application/json" verb="DELETE"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoAsociados" path="/ClienteCreditoAsociados" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAsociados.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAsociados..ConsultarAsociado" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAsociados.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAsociados..GuardarSeguimientos" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreAsociados.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreAsociados..EliminarSeguimientos" produces="application/json" verb="DELETE"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoDatosEmbarque" path="/ClienteCreditoDatosEmbarque" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreDatosEmbarque.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreDatosEmbarque..ConsultarDatosCliEmb" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ClienteCreDatosEmbarque.pidl::com.progress.openedge.pdt.bpmbindings" name="ClienteCreDatosEmbarque..GuardarDatosCliEmb" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SolCredAutorizacion" path="/SolCredAutorizacion" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolCredAutorizacion.pidl::com.progress.openedge.pdt.bpmbindings" name="SolCredAutorizacion..ActualizarAutorizacionRevisiones" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoPlazo" path="/ClienteCreditoPlazo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolCredPlazo.pidl::com.progress.openedge.pdt.bpmbindings" name="SolCredPlazo..ConsultarDatosCredito" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolCredPlazo.pidl::com.progress.openedge.pdt.bpmbindings" name="SolCredPlazo..ActualizarDatosCredito" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Calidad" path="/Calidad" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoCalidad.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoCalidad..ConsultarCalidad" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SolicitudesCredito" path="/SolicitudesCredito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudesCredito.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudesCredito..ConsultarTodasSolicitudes" produces="application/json" verb="GET">
+      <prgs:param name="FecInicio" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="Estatus" type="QUERY"/>
+      <prgs:param name="Segmento" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_v1_CarteraVisor" path="/v1/CarteraVisor" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/carteractevisor2.pidl::com.progress.openedge.pdt.bpmbindings" name="carteractevisor2..GetCartera" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Estatus" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReferenciaPortal" path="/ReferenciaPortal" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReferenciaPortal.pidl::com.progress.openedge.pdt.bpmbindings" name="ReferenciaPortal..GetConsultaReferencia" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReferenciaPortal.pidl::com.progress.openedge.pdt.bpmbindings" name="ReferenciaPortal..PostGrabaReferencia" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RespuestaCliente" path="/RespuestaCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RespuestaCliente.pidl::com.progress.openedge.pdt.bpmbindings" name="RespuestaCliente..PostGuardaRespuesta" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RespuestaCliente.pidl::com.progress.openedge.pdt.bpmbindings" name="RespuestaCliente..GetConsultaRespuesta" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RespuestaCliente.pidl::com.progress.openedge.pdt.bpmbindings" name="RespuestaCliente..PutActualizaRespuesta" produces="application/json" verb="PUT"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RespuestaCliente.pidl::com.progress.openedge.pdt.bpmbindings" name="RespuestaCliente..DelHistRespCte" produces="application/json" verb="DELETE">
+      <prgs:param name="IdCliente" type="QUERY"/>
+      <prgs:param name="IdUser" type="QUERY"/>
+      <prgs:param name="FecReg" type="QUERY"/>
+      <prgs:param name="Hora" type="QUERY"/>
+      <prgs:param name="Comentario" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CambiarCliente" path="/CambiarCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/cambiarcliente.pidl::com.progress.openedge.pdt.bpmbindings" name="cambiarcliente..p-CambiaCliente" produces="application/json" verb="PUT">
+      <prgs:param name="ClienteNuevo" type="QUERY"/>
+      <prgs:param name="IdUsuario" type="QUERY"/>
+      <prgs:param name="Rec" type="QUERY"/>
+      <prgs:param name="Nivel" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CambiarAsociado" path="/CambiarAsociado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/cambiarasociado.pidl::com.progress.openedge.pdt.bpmbindings" name="cambiarasociado..p-CambiaAsociado" produces="application/json" verb="PUT">
+      <prgs:param name="AsociadoNuevo" type="QUERY"/>
+      <prgs:param name="Rec" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CambiarTipoCliente" path="/CambiarTipoCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/cambiartipocliente.pidl::com.progress.openedge.pdt.bpmbindings" name="cambiartipocliente..GetMostrarTipoCliente" produces="application/json" verb="GET">
+      <prgs:param name="TipoCte" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/cambiartipocliente.pidl::com.progress.openedge.pdt.bpmbindings" name="cambiartipocliente..CambiaTipoCliente" produces="application/json" verb="PUT">
+      <prgs:param name="IdTipoCliente" type="QUERY"/>
+      <prgs:param name="Rec" type="QUERY"/>
+      <prgs:param name="Nivel" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_MovimientoCliente" path="/MovimientoCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/Movctep2.pidl::com.progress.openedge.pdt.bpmbindings" name="Movctep2..GetCartera" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RelacionCobranza" path="/RelacionCobranza" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RelacionCobranza.pidl::com.progress.openedge.pdt.bpmbindings" name="RelacionCobranza..AltaObsRelacionCobranza" produces="application/json" verb="PUT">
+      <prgs:param name="User" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/RelacionCobranza.pidl::com.progress.openedge.pdt.bpmbindings" name="RelacionCobranza..PostCobranza" produces="application/json" verb="POST">
+      <prgs:param name="User" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_MovimientoClienteEstadistica" path="/MovimientoClienteEstadistica" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/estadisticas.pidl::com.progress.openedge.pdt.bpmbindings" name="estadisticas..GetEstadistica" produces="application/json" verb="GET">
+      <prgs:param name="anio" type="QUERY"/>
+      <prgs:param name="idCliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Devoluciones" path="/Devoluciones" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/devoluciones.pidl::com.progress.openedge.pdt.bpmbindings" name="devoluciones..GetDevoluciones" produces="application/json" verb="GET">
+      <prgs:param name="Todo" type="QUERY"/>
+      <prgs:param name="FecRegistro" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ConsultaCliente" path="/ConsultaCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/conscliente.pidl::com.progress.openedge.pdt.bpmbindings" name="conscliente..GetConsultaCte" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Refacturacion" path="/Refacturacion" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/refacturacion.pidl::com.progress.openedge.pdt.bpmbindings" name="refacturacion..GetRefactura" produces="application/json" verb="GET">
+      <prgs:param name="Factura" type="QUERY"/>
+      <prgs:param name="IdUser" type="QUERY"/>
+      <prgs:param name="Confirmar" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/refacturacion.pidl::com.progress.openedge.pdt.bpmbindings" name="refacturacion..PostRefacturacion" produces="application/json" verb="POST">
+      <prgs:param name="Factura" type="QUERY"/>
+      <prgs:param name="Cfdi" type="QUERY"/>
+      <prgs:param name="Requisicion" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Plazo" type="QUERY"/>
+      <prgs:param name="IdUser" type="QUERY"/>
+      <prgs:param name="RFiscal" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RelacionCobranzaConsulta" path="/RelacionCobranzaConsulta" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/consrelcob.pidl::com.progress.openedge.pdt.bpmbindings" name="consrelcob..ConsultaRelacion" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="RelCob" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Conciliacion" path="/ConciliacionManuel" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/concacuse.pidl::com.progress.openedge.pdt.bpmbindings" name="concacuse..PostGeneraAcuse" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depvisor3.pidl::com.progress.openedge.pdt.bpmbindings" name="depvisor3..GetDepositos" produces="application/json" verb="GET">
+      <prgs:param name="iRec" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DepositoEstatus" path="/DepositoEstatus" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depositoestatus.pidl::com.progress.openedge.pdt.bpmbindings" name="depositoestatus..p-Borra" produces="application/json" verb="PUT">
+      <prgs:param name="Rec" type="QUERY"/>
+      <prgs:param name="IdUsuario" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Acuse" path="/Acuse" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/acuse.pidl::com.progress.openedge.pdt.bpmbindings" name="acuse..GetAcuse" produces="application/json" verb="GET">
+      <prgs:param name="Acuse" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SolicitudCredito" path="/SolicitudCredito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCredito.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCredito..AltaSolicitud" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCredito.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCredito..EditarSolicitud" produces="application/json" verb="PUT"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCredito.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCredito..ConsultarSolicitud" produces="application/json" verb="GET">
+      <prgs:param name="Solicitud" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="TipoDoc" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCreditoReferProv" path="/ClienteCreditoReferProv" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolCredReferProv.pidl::com.progress.openedge.pdt.bpmbindings" name="SolCredReferProv..ActualizarReferenciasProv" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Vendedor" path="/Vendedor" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoVendedor.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoVendedor..GetVendedorEmpleado" produces="application/json" verb="GET">
+      <prgs:param name="TipoVen" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteClientes" path="/ReporteClientes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteClientes.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteClientes..ConsultarClientes" produces="application/json" verb="GET">
+      <prgs:param name="TipoCliente" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Segmento" type="QUERY"/>
+      <prgs:param name="Ciudad" type="QUERY"/>
+      <prgs:param name="FechaInicio" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+      <prgs:param name="Estatus" type="QUERY"/>
+      <prgs:param name="Estado" type="QUERY"/>
+      <prgs:param name="Giro" type="QUERY"/>
+      <prgs:param name="Vendedor" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Pagare" path="/Pagare" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pagare.pidl::com.progress.openedge.pdt.bpmbindings" name="pagare..AltaPagare" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pagare.pidl::com.progress.openedge.pdt.bpmbindings" name="pagare..EliminarPdf" produces="application/json" verb="DELETE"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pagare.pidl::com.progress.openedge.pdt.bpmbindings" name="pagare..AltaPdf" produces="application/json" verb="PUT"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pagare.pidl::com.progress.openedge.pdt.bpmbindings" name="pagare..ConsultarPagares" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Pagare" type="QUERY"/>
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_LigaPago" path="/LigaPago" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/concacuse2.pidl::com.progress.openedge.pdt.bpmbindings" name="concacuse2..PostLigaPago" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/concacuse2.pidl::com.progress.openedge.pdt.bpmbindings" name="concacuse2..GetLigaPago" produces="application/json" verb="GET">
+      <prgs:param name="FechaInicio" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepLimiteDeCreditoSug" path="/RepLimiteDeCreditoSug" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/limiteCreditoSug.pidl::com.progress.openedge.pdt.bpmbindings" name="limiteCreditoSug..GetLimiteCreditoSugerido" produces="application/json" verb="GET">
+      <prgs:param name="FechaInicio" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Vendedor" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_AnticipoCte" path="/AnticipoCte" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/anticipocons.pidl::com.progress.openedge.pdt.bpmbindings" name="anticipocons..GetConsultaAnticipo" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="EsMov" type="QUERY"/>
+      <prgs:param name="FechaInicio" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Anticipo" path="/Anticipo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/anticipocons2.pidl::com.progress.openedge.pdt.bpmbindings" name="anticipocons2..GetConsultaAnticipo" produces="application/json" verb="GET">
+      <prgs:param name="Acuse" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/anticipo-captura.pidl::com.progress.openedge.pdt.bpmbindings" name="anticipo-captura..AltaAnticipo" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_v1_MovimientoCliente" path="/v1/MovimientoCliente" produces="application/json"/>
+  <prgs:resource consumes="application/json" name="_FacturaCliente" path="/FacturaCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/intereses.pidl::com.progress.openedge.pdt.bpmbindings" name="intereses..GetFacturas" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Rango" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Interes" path="/Interes" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/intereses.pidl::com.progress.openedge.pdt.bpmbindings" name="intereses..PostRemision" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepChequeSeguricheq" path="/RepChequeSeguricheq" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/reportecheques.pidl::com.progress.openedge.pdt.bpmbindings" name="reportecheques..GetRepCheqProtegido" produces="application/json" verb="GET">
+      <prgs:param name="FechaInicial" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+      <prgs:param name="Autorizador" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteDepositos" path="/ReporteDepositos" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteDepositos.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteDepositos..GetDepositos" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Tipo" type="QUERY"/>
+      <prgs:param name="FecInicio" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteAnticipos" path="/ReporteAnticipos" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteAnticipos.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteAnticipos..GetConsultaAnticipo" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="FecInicio" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="Anticipo" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteAcuses" path="/ReporteAcuses" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteAcuses.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteAcuses..GetAcuse" produces="application/json" verb="GET">
+      <prgs:param name="FecInicio" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="FormaPago" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteFacturaPlazo" path="/ReporteFacturaPlazo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteFacturaPlazoEspecial.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteFacturaPlazoEspecial..GetAcuse" produces="application/json" verb="GET">
+      <prgs:param name="FecInicio" type="QUERY"/>
+      <prgs:param name="Vendedor" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_v_FacturaCliente" path="/v/FacturaCliente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depvisor-facturas.pidl::com.progress.openedge.pdt.bpmbindings" name="depvisor-facturas..GetFacturas" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Rango" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ValidarRegistro" path="/ValidarRegistro" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ValidarClienteBd.pidl::com.progress.openedge.pdt.bpmbindings" name="ValidarClienteBd..ValidarClienteExistente" produces="application/json" verb="GET">
+      <prgs:param name="RazonSocial" type="QUERY"/>
+      <prgs:param name="Email" type="QUERY"/>
+      <prgs:param name="RFC" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ConciliacionContado" path="/ConciliacionContado" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/conciliacion-contado.pidl::com.progress.openedge.pdt.bpmbindings" name="conciliacion-contado..PostGeneraPago" produces="application/json" verb="POST"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteComision" path="/ReporteComision" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom.pidl::com.progress.openedge.pdt.bpmbindings" name="custom..RepComision" produces="application/json" verb="GET">
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="Agente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteRelease" path="/ReporteRelease" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom2.pidl::com.progress.openedge.pdt.bpmbindings" name="custom2..RepRelease" produces="application/json" verb="GET">
+      <prgs:param name="Fecini" type="QUERY"/>
+      <prgs:param name="Fecfin" type="QUERY"/>
+      <prgs:param name="Embarcado" type="QUERY"/>
+      <prgs:param name="Facturado" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Asociado" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ReporteCartera" path="/ReporteCartera" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ReporteCartera.pidl::com.progress.openedge.pdt.bpmbindings" name="ReporteCartera..GetReporteCartera" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Tipo" type="QUERY"/>
+      <prgs:param name="Moneda" type="QUERY"/>
+      <prgs:param name="Zonas" type="QUERY"/>
+      <prgs:param name="Segmento" type="QUERY"/>
+      <prgs:param name="Calidad" type="QUERY"/>
+      <prgs:param name="Fecha" type="QUERY"/>
+      <prgs:param name="Cobrador" type="QUERY"/>
+      <prgs:param name="Dias" type="QUERY"/>
+      <prgs:param name="Resp" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_AsociadoCredito" path="/AsociadoCredito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoAsociadoCredito.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoAsociadoCredito..BuscarAsociados" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepAnalisisSaldos" path="/RepAnalisisSaldos" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom3.pidl::com.progress.openedge.pdt.bpmbindings" name="custom3..ReporteAnalisisSaldos" produces="application/json" verb="GET">
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="Dias" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Zona" type="QUERY"/>
+      <prgs:param name="Resp" type="QUERY"/>
+      <prgs:param name="Cobrador" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Moneda" path="/Moneda" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoMoneda.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoMoneda..GetMoneda" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepChequesDev" path="/RepChequesDev" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom4.pidl::com.progress.openedge.pdt.bpmbindings" name="custom4..ReporteCheques" produces="application/json" verb="GET">
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Estatus" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_EstadoCuentaCli" path="/EstadoCuentaCli" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/estadoctacli.pidl::com.progress.openedge.pdt.bpmbindings" name="estadoctacli..GetEstadoCtaCli" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+      <prgs:param name="Fecha" type="QUERY"/>
+      <prgs:param name="TasaInt" type="QUERY"/>
+      <prgs:param name="IdUser" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepRelacionPago" path="/RepRelacionPago" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom5.pidl::com.progress.openedge.pdt.bpmbindings" name="custom5..ReporteRelPago" produces="application/json" verb="GET">
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ClienteCredito" path="/ClienteCredito" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCreditoCte.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCreditoCte..ConsultarSolicitud" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCreditoCte.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCreditoCte..EditarSolicitud" produces="application/json" verb="PUT"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCreditoCte.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCreditoCte..AltaRegistro" produces="application/json" verb="POST"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/SolicitudCreditoCte.pidl::com.progress.openedge.pdt.bpmbindings" name="SolicitudCreditoCte..EliminarRegistro" produces="application/json" verb="DELETE"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_LigaPagoResp" path="/LigaPagoResp" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/ligapago.pidl::com.progress.openedge.pdt.bpmbindings" name="ligapago..GetLigaPagoResp" produces="application/json" verb="GET">
+      <prgs:param name="IdReference" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_VisorLigasPendientes" path="/LigaPendienteAplicar" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/visorligaspendientes.pidl::com.progress.openedge.pdt.bpmbindings" name="visorligaspendientes..GetLigasPendientes" produces="application/json" verb="GET"/>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/visorligaspendientes.pidl::com.progress.openedge.pdt.bpmbindings" name="visorligaspendientes..PostLigasPendientes" produces="application/json" verb="POST">
+      <prgs:param name="Referencia" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_FacturaRelacion" path="/FacturaRelacion" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/FacturaRelacion.pidl::com.progress.openedge.pdt.bpmbindings" name="FacturaRelacion..GetFacRelacion" produces="application/json" verb="GET">
+      <prgs:param name="Factura" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/FacturaRelacion.pidl::com.progress.openedge.pdt.bpmbindings" name="FacturaRelacion..PostGeneraRelacion" produces="application/json" verb="POST">
+      <prgs:param name="Remitente" type="QUERY"/>
+      <prgs:param name="Destinatario" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DevolucionPorId" path="/DevolucionPorFolio" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depvisor3.pidl::com.progress.openedge.pdt.bpmbindings" name="depvisor3..GetDevolucionPorId" produces="application/json" verb="GET">
+      <prgs:param name="Devolucion" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DepositoCargaDatos" path="/DepositoCargaDatos" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/depvisor.pidl::com.progress.openedge.pdt.bpmbindings" name="depvisor..GetCargaDatos" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Responsables" path="/Responsables" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/CatalogoResponsable.pidl::com.progress.openedge.pdt.bpmbindings" name="CatalogoResponsable..ConsultarResp" produces="application/json" verb="GET"/>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_DetPedidoPendiente" path="/DetPedidoPendiente" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/detallepedido.pidl::com.progress.openedge.pdt.bpmbindings" name="detallepedido..DetallePedidosCliente" produces="application/json" verb="GET">
+      <prgs:param name="Cliente" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_SecuenciaPedido" path="/SecuenciaPedido" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/pedidosecuenciap.pidl::com.progress.openedge.pdt.bpmbindings" name="pedidosecuenciap..leePedidos" produces="application/json" verb="GET">
+      <prgs:param name="IdPedido" type="QUERY"/>
+      <prgs:param name="Resto" type="QUERY"/>
+      <prgs:param name="IdVendedor" type="QUERY"/>
+      <prgs:param name="IdCliente" type="QUERY"/>
+      <prgs:param name="RFC" type="QUERY"/>
+      <prgs:param name="ctFecRegIni" type="QUERY"/>
+      <prgs:param name="ctFecRegFin" type="QUERY"/>
+      <prgs:param name="IdEstatus" type="QUERY"/>
+      <prgs:param name="ReqCte" type="QUERY"/>
+      <prgs:param name="Direccion" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_CorrePedido" path="/CorrePedido" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/programas/vtac0800.pidl::com.progress.openedge.pdt.bpmbindings" name="vtac0800" produces="application/json" verb="GET">
+      <prgs:param name="Pedido" type="QUERY"/>
+      <prgs:param name="Resto" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ConsultaFact" path="/ConsultaFact" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/consultafactura.pidl::com.progress.openedge.pdt.bpmbindings" name="consultafactura..GetFacturasGral" produces="application/json" verb="GET">
+      <prgs:param name="Factura" type="QUERY"/>
+      <prgs:param name="Cliente" type="QUERY"/>
+      <prgs:param name="Vendedor" type="QUERY"/>
+      <prgs:param name="FechaIni" type="QUERY"/>
+      <prgs:param name="FechaFin" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ConsultaDetFact" path="/ConsultaDetFact" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/detfactura.pidl::com.progress.openedge.pdt.bpmbindings" name="detfactura..GetDetFactura" produces="application/json" verb="GET">
+      <prgs:param name="IdFactura" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

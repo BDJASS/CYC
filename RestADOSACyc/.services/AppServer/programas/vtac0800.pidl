@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pidl:description targetNamespace="urn:schemas-progress-com:bpm:appserverbinding:0001" serviceType="wsad:OEAppServerInvoke" xmlns:wsad="urn:schemas-progress-com:bpm:appserverbinding:0001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pidl="http://www.progress.com/caf/idl1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:java="http://www.progress.com/adapters/idl1.0/javatype">
+<pidl:types>
+</pidl:types>
+  <pidl:interface name="com.progress.openedge.pdt.bpminterfaces">
+    <pidl:operation name="vtac0800" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:input messageLabel="lPedido" req="false" type="java:String">
+    </pidl:input>
+      <pidl:input messageLabel="lResto" req="false" type="java:Integer">
+    </pidl:input>
+    </pidl:operation>
+  </pidl:interface>
+  <pidl:binding name="com.progress.openedge.pdt.bpmbindings" interface="wsad:com.progress.openedge.pdt.bpminterfaces" type="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<wsad:Operation isPersistent="false" useFullName="false">
+<wsad:Name>vtac0800</wsad:Name><wsad:ProcPath>programas\</wsad:ProcPath><wsad:ProPath></wsad:ProPath><wsad:ProcExt>p</wsad:ProcExt><wsad:ProcDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true" IsMappedToSubmit="false"><wsad:Name>vtac0800</wsad:Name><wsad:HelpString></wsad:HelpString><wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false"><wsad:Name>lPedido</wsad:Name><wsad:OrigName>l-Pedido</wsad:OrigName><wsad:Type>1</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter><wsad:Parameter allowUnknown="true" ordinal="2" writeXmlBeforeImage="false"><wsad:Name>lResto</wsad:Name><wsad:OrigName>l-Resto</wsad:OrigName><wsad:Type>4</wsad:Type><wsad:Mode>1</wsad:Mode></wsad:Parameter></wsad:ProcDetail></wsad:Operation>  </pidl:binding>
+</pidl:description>

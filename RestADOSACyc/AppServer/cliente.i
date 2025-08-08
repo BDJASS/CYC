@@ -1,0 +1,190 @@
+
+ /*------------------------------------------------------------------------
+    File        : cliente
+    Purpose		:
+    Syntax      : 
+    Description :
+    Author(s)   : Gilberto Cervantes
+    Created     : Mon May 23 09:22:29 CDT 2016
+    Notes       : 
+  ----------------------------------------------------------------------*/
+  
+  /* ***************************  Definitions  ************************** */
+  
+  /* ********************  Preprocessor Definitions  ******************** */
+  
+  /* ***************************  Main Block  *************************** */
+  
+  /** Dynamically generated schema file **/
+   
+
+DEFINE TEMP-TABLE ttCliente BEFORE-TABLE bttCliente
+FIELD Id-Cliente AS INTEGER INITIAL "0" LABEL "Cliente"
+FIELD RazonSocial AS CHARACTER LABEL "Razon Social"
+FIELD Propietario AS CHARACTER LABEL "Propietario"
+FIELD CalleNo AS CHARACTER LABEL "CalleNo"
+FIELD Colonia AS CHARACTER LABEL "Colonia"
+FIELD CP AS CHARACTER LABEL "CP"
+FIELD RFC AS CHARACTER LABEL "RFC"
+FIELD Tel1 AS CHARACTER LABEL "Tel"
+FIELD Tel2 AS CHARACTER LABEL "Tel"
+FIELD Tel3 AS CHARACTER LABEL "Tel"
+FIELD Fax AS CHARACTER LABEL "Fax"
+FIELD Id-Calidad AS INTEGER INITIAL "0" LABEL "Calidad"
+FIELD Id-Zona AS INTEGER INITIAL "0" LABEL "Zona"
+FIELD Id-Vendedor AS CHARACTER LABEL "Vendedor"
+FIELD Id-Resp AS INTEGER INITIAL "0" LABEL "Responsable"
+FIELD Id-Cobrador AS INTEGER INITIAL "0" LABEL "Cobrador"
+FIELD Id-Giro AS INTEGER INITIAL "0" LABEL "Giro"
+FIELD Id-RutaEmb AS INTEGER INITIAL "0" LABEL "Ruta Embarque"
+FIELD FecReg AS DATE INITIAL "?" LABEL "FecReg"
+FIELD SaldoIni AS DECIMAL INITIAL "0" LABEL "?"
+FIELD Limite AS DECIMAL INITIAL "0" LABEL "Limite"
+FIELD Plazo AS INTEGER INITIAL "0" LABEL "Plazo"
+FIELD Distribuidor AS LOGICAL INITIAL "no" LABEL "Distribuidor"
+FIELD Tipo AS INTEGER INITIAL "0" LABEL "Tipo"
+FIELD Id-tipocob AS INTEGER INITIAL "0" LABEL "Tipo Cob"
+FIELD Id-Ciudad AS INTEGER INITIAL "0" LABEL "?"
+FIELD Observaciones AS CHARACTER LABEL "?"
+FIELD DiaPago1 AS CHARACTER LABEL "?"
+FIELD DiaPago2 AS CHARACTER LABEL "?"
+FIELD DiaPago3 AS CHARACTER LABEL "?"
+FIELD DiaRev1 AS CHARACTER LABEL "?"
+FIELD DiaRev2 AS CHARACTER LABEL "?"
+FIELD DiaRev3 AS CHARACTER LABEL "?"
+FIELD Credito AS LOGICAL INITIAL "no" LABEL "?"
+FIELD Id-Banco1 AS INTEGER INITIAL "0" LABEL "Banco1"
+FIELD Ctcheq1 AS CHARACTER LABEL "Cta Bancaria1"
+FIELD Id-Banco2 AS INTEGER INITIAL "0" LABEL "Banco2"
+FIELD Ctacheq2 AS CHARACTER LABEL "Cta Bancaria2"
+FIELD Id-Banco3 AS INTEGER INITIAL "0" LABEL "Banco3"
+FIELD CtaCheq3 AS CHARACTER LABEL "Cta Bancaria3"
+FIELD Delegacion AS CHARACTER LABEL "Delegacion"
+FIELD OCyes AS LOGICAL INITIAL "no" LABEL "?"
+FIELD Blk1 AS LOGICAL INITIAL "no" LABEL "?"
+FIELD Blk2 AS LOGICAL INITIAL "no" LABEL "?"
+FIELD Blk3 AS LOGICAL INITIAL "no" LABEL "?"
+FIELD fecmodchq1 AS DATE INITIAL "?" LABEL "Fec Mov Chq1"
+FIELD fecmodchq2 AS DATE INITIAL "?" LABEL "Fec Mod Chq2"
+FIELD fecmodchq3 AS DATE INITIAL "?" LABEL "Fec Mod Chq3"
+FIELD DescPP1 AS DECIMAL INITIAL "0" LABEL "?"
+FIELD DescPP2 AS DECIMAL INITIAL "0" LABEL "?"
+FIELD PlazoPP AS INTEGER INITIAL "0" LABEL "?"
+FIELD PorcCom AS DECIMAL INITIAL "0" LABEL "Porc Com"
+FIELD FactorDesc AS DECIMAL INITIAL "0" LABEL "FactorDesc"
+FIELD Estatus AS CHARACTER INITIAL "B" LABEL "?"
+FIELD Accesado AS LOGICAL INITIAL "no" LABEL "?"
+FIELD Id-Ramo AS CHARACTER LABEL "?"
+FIELD Id-Rutacob AS CHARACTER LABEL "?"
+FIELD Obsequio AS CHARACTER LABEL "?"
+FIELD DesCtdo AS DECIMAL INITIAL "0" LABEL "?"
+FIELD UsuarioAutD AS CHARACTER LABEL "?"
+FIELD traspaso AS CHARACTER LABEL "Traspaso"
+FIELD PorcFlete AS DECIMAL INITIAL "0" LABEL "PorcFlete"
+FIELD PorcDst AS DECIMAL INITIAL "0" LABEL "Porc Dst"
+FIELD CorteAdelantado AS LOGICAL INITIAL "No" LABEL "CortAdel"
+FIELD Id-DevCor AS INTEGER INITIAL "0" LABEL "Dev-Corte"
+FIELD ReqYes AS LOGICAL INITIAL "no" LABEL "?"
+FIELD APP AS CHARACTER LABEL "AParteno"
+FIELD APM AS CHARACTER LABEL "AMaterno"
+FIELD Nombre AS CHARACTER LABEL "Nombre"
+FIELD NumExt AS CHARACTER LABEL "NumExt"
+FIELD NumInt AS CHARACTER LABEL "NumInt"
+FIELD TipoCol AS INTEGER INITIAL "0" LABEL "TipoCol"
+FIELD PlazoNCO AS INTEGER INITIAL "0" LABEL "PlazoNCO"
+FIELD e-mail AS CHARACTER LABEL "e-mail"
+FIELD curp AS CHARACTER LABEL "CURP"
+FIELD EmbEsp AS LOGICAL INITIAL "no" LABEL "Embarque Esp"
+FIELD Activo AS LOGICAL INITIAL "yes" LABEL "Activo"
+FIELD PassInternet AS CHARACTER LABEL "Password"
+FIELD Calle AS CHARACTER LABEL "Calle"
+FIELD BackOrder AS INTEGER INITIAL "0" LABEL "BO"
+FIELD AnexaRemision AS LOGICAL INITIAL "no" LABEL "Anexa Remision"
+FIELD LimCheque AS DECIMAL INITIAL "0" LABEL "Limite"
+FIELD DiasCheque AS INTEGER INITIAL "0" LABEL "DiasCheque"
+FIELD cantcheque AS INTEGER INITIAL "0" LABEL "Cant Cheq PF"
+FIELD fletepagado AS LOGICAL INITIAL "No" LABEL "Fte Pagado"
+FIELD mtominfte AS DECIMAL INITIAL "0" LABEL "Mto Min Fte"
+FIELD RegAltex AS CHARACTER LABEL "Reg Altex"
+FIELD proveedor AS CHARACTER LABEL "Num Prov"
+FIELD tipoabc AS CHARACTER LABEL "Importancia"
+FIELD DiaEmb AS LOGICAL EXTENT 7 INITIAL "yes" LABEL "Dia Emb"
+FIELD Id-User AS CHARACTER LABEL "User"
+FIELD FecBaja AS DATE INITIAL "?" LABEL "?"
+FIELD FEFormaPago AS CHARACTER LABEL "Forma Pago"
+FIELD FEDigitosCuenta AS CHARACTER LABEL "Digitos"
+FIELD FEBancoPago AS CHARACTER LABEL "?"
+FIELD BuzonFiscal AS CHARACTER LABEL "?"
+FIELD FEFechaMP AS DATE INITIAL "?" LABEL "?"
+FIELD FEHoraMP AS INTEGER INITIAL "0" LABEL "?"
+FIELD MaxCheque AS DECIMAL INITIAL "0" LABEL "Maximo"
+FIELD FecDev AS DATE INITIAL "?" LABEL "FecDev"
+FIELD FolDev AS INTEGER INITIAL "0" LABEL "Folio Devolucion"
+FIELD BlqDev AS LOGICAL INITIAL "No" LABEL "Bloqueado"
+FIELD IdCliente  AS INTEGER INITIAL "0" LABEL "Cuenta"
+FIELD Ciudad AS CHARACTER LABEL "Ciudad"
+FIELD Estado AS CHARACTER LABEL "Estado"
+FIELD Email AS CHARACTER LABEL "e-mail"
+FIELD PorcIVA AS INTEGER INITIAL "0" LABEL "?" 
+FIELD IdCiudad AS INTEGER INITIAL "0" LABEL "?"
+FIELD Pais AS CHARACTER LABEL "PAIS"
+FIELD IdVendedor AS CHARACTER LABEL "Vendedor"
+FIELD NomVendedor AS CHARACTER LABEL "Vendedor Nombre"
+FIELD DiasCredito AS INTEGER INITIAL "0" LABEL "Credito"
+FIELD IdCalidad AS INTEGER INITIAL "0" LABEL "Calidad"
+FIELD IdResp AS INTEGER INITIAL "0" LABEL "Responsable"
+FIELD IdZona AS INTEGER INITIAL "0" LABEL "Zona"
+FIELD IdGiro AS INTEGER INITIAL "0" LABEL "Giro"
+FIELD IdRamo AS CHARACTER LABEL "?"
+FIELD IdCobrador AS INTEGER INITIAL "0" LABEL "Cobrador"
+FIELD IdRutaEmb AS INTEGER INITIAL "0" LABEL "Ruta Embarque"
+FIELD CalidadDescr AS CHARACTER INITIAL "" LABEL "Calidad Descripcion"
+FIELD ZonaUbic AS INTEGER INITIAL "0" LABEL "Zona Ubicacion"
+FIELD CteSoriana AS LOGICAL INITIAL "no" LABEL "Cliente Soriana"
+FIELD ttUltimaTran AS INTEGER LABEL "Ultimo Transporte"
+FIELD ttUltimaEnt  AS INTEGER LABEL "Ultima Entrega"
+FIELD Id-UsoCFDI   AS CHARACTER LABEL "Uso CFDI" SERIALIZE-NAME "IdUsoCFDI"
+FIELD SurtParcial AS LOGICAL LABEL "Surt Parcial" INITIAL FALSE
+FIELD HayDstArt   AS LOGICAL LABEL "DstArt" INITIAL FALSE
+FIELD IdRFiscal   AS CHARACTER INITIAL "" LABEL "Regimen Fiscal"
+FIELD DescrRFiscal   AS CHARACTER INITIAL "" LABEL "Descr RFiscal"
+FIELD NomEmpresa        AS CHARACTER INITIAL "" LABEL "Nom Empresa"
+FIELD RSocietario       AS CHARACTER INITIAL "" LABEL "RSocietario"
+FIELD gOrigen       AS CHARACTER INITIAL "" LABEL "Alm. Origen"
+FIELD CteMon AS CHARACTER
+FIELD TipoPrecio AS CHARACTER 
+INDEX idx-abcvendmail  Activo  ASCENDING  Id-Cliente  ASCENDING  Id-Vendedor  ASCENDING  tipoabc  ASCENDING  e-mail  ASCENDING 
+INDEX idx-abrvcalleno  CalleNo  ASCENDING 
+INDEX idx-abrvprop  Propietario  ASCENDING 
+INDEX idx-abrvrazon  RazonSocial  ASCENDING 
+INDEX idx-abrvrfc  RFC  ASCENDING 
+INDEX idx-abrvtel1  Tel1  ASCENDING 
+INDEX Idx-accesado  Accesado  ASCENDING 
+INDEX idx-altexcte  RegAltex  ASCENDING  Id-Cliente  ASCENDING 
+INDEX Idx-Calidad  Id-Calidad  ASCENDING 
+INDEX Idx-CalleNo  CalleNo  ASCENDING  Id-Cliente  ASCENDING 
+INDEX Idx-Ciudad  Id-Ciudad  ASCENDING 
+INDEX idx-cli IS  PRIMARY UNIQUE  Id-Cliente  ASCENDING 
+INDEX Idx-Cobrador  Id-Cobrador  ASCENDING 
+INDEX idx-ctacheq1  Id-Banco1  ASCENDING  Ctcheq1  ASCENDING 
+INDEX idx-ctacheq2  Id-Banco2  ASCENDING  Ctacheq2  ASCENDING 
+INDEX idx-ctacheq3  Id-Banco3  ASCENDING  CtaCheq3  ASCENDING 
+INDEX Idx-Curp IS  UNIQUE  curp  ASCENDING  Id-Cliente  ASCENDING 
+INDEX idx-email  e-mail  ASCENDING 
+INDEX idx-ftecte  fletepagado  ASCENDING  Id-Cliente  ASCENDING 
+INDEX Idx-Giro  Id-Giro  ASCENDING 
+INDEX Idx-Propietario  Propietario  ASCENDING  Id-Cliente  ASCENDING 
+INDEX Idx-Ramo  Id-Ramo  ASCENDING 
+INDEX idx-Razon RazonSocial  ASCENDING 
+INDEX Idx-RazonClie  RazonSocial  ASCENDING  Id-Cliente  ASCENDING 
+INDEX idx-regaltex  RegAltex  ASCENDING 
+INDEX Idx-Resp  Id-Resp  ASCENDING 
+INDEX idx-RFC  RFC  ASCENDING 
+INDEX Idx-Ruta  Id-Rutacob  ASCENDING 
+INDEX Idx-Tel1  Tel1  ASCENDING  Id-Cliente  ASCENDING 
+INDEX idx-tipoabc  Activo  ASCENDING  tipoabc  ASCENDING  Id-Cliente  ASCENDING 
+INDEX Idx-TipoCol  TipoCol  ASCENDING 
+INDEX Idx-Vendedor  Id-Vendedor  ASCENDING 
+INDEX Idx-Zona  Id-Zona  ASCENDING.
+
+DEFINE DATASET dsCliente FOR ttCliente.

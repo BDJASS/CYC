@@ -400,7 +400,7 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.Cheque      = ""
             PagoAcuse.FecCheque   = ?    
             PagoAcuse.CPFormaPago = ""       // "01=Efectivo,02=Cheque,03=Transferencia"
-            PagoAcuse.TipoCambio  = /*IF AVAILABLE TCReal THEN TCReal.Importe ELSE*/ 1.
+            PagoAcuse.TipoCambio  = IF AVAILABLE Factura THEN Factura.TipoCambio ELSE 1.
         l-NPagos = l-NPagos + 1.
         RELEASE Devolucion.
     END.
@@ -538,7 +538,6 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.Id-Tp       = l-TP   // ttPago.FormaPago    
             PagoAcuse.ImpRecibido = ttPago.Importe
             PagoAcuse.Importe     = ttPago.Importe
-           // PagoAcuse.Id-Banco    = IF ttPago.IdBanco <> 0 THEN ttPago.IdBanco ELSE 25 
             PagoAcuse.Id-Banco    = IF ttPago.IdBanco <> 0 THEN ttPago.IdBanco 
                                     ELSE IF l-TP = 57 THEN 25
                                     ELSE IF l-TP = 58 THEN 1
@@ -549,8 +548,7 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.CPFormaPago = ip-formapago       // "01=Efectivo,02=Cheque,03=Transferencia"
             PagoAcuse.Id-Moneda   = 1
             PagoAcuse.TC          = 1     
-            PagoAcuse.TipoCambio  = /*IF AVAILABLE TCReal THEN TCReal.Importe ELSE*/ 1.
-  //  l-ImpDeposito = l-ImpDeposito + PagoAcuse.Importe.
+            PagoAcuse.TipoCambio  = 1.
         l-ImpDeposito = l-ImpDeposito + ttPago.Importe.       
         l-NPagos = l-NPagos + 1.
         IF ttPago.Rec <> 0 AND AVAILABLE DepBanco THEN 
@@ -983,7 +981,6 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.Id-Tp       = l-TP 
             PagoAcuse.ImpRecibido = l-RestoAnt
             PagoAcuse.Importe     = l-RestoAnt
-         // PagoAcuse.Id-Banco    = 25  
             PagoAcuse.Id-Banco    = IF l-TP = 57 THEN 25
                                     ELSE IF l-TP = 58 THEN 1
                                     ELSE 25   
@@ -993,7 +990,7 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.CPFormaPago = ip-formapago       // "01=Efectivo,02=Cheque,03=Transferencia"
             PagoAcuse.Id-Moneda   = 1
             PagoAcuse.TC          = 1     
-            PagoAcuse.TipoCambio  = /*IF AVAILABLE TCReal THEN TCReal.Importe ELSE*/ 1.
+            PagoAcuse.TipoCambio  = 1.
 
         FIND FIRST ttPago WHERE ttPago.Rec <> 0 NO-LOCK NO-ERROR.
         IF AVAILABLE ttPago AND AVAILABLE DepBanco THEN 

@@ -270,7 +270,7 @@ IF ipAutoriza = TRUE THEN DO:
     END. /* del for each movcliente */
     
     ASSIGN
-         v-asunto    = "AVISO AUTOMATICO DE AUTORIZACION DE CREDITO (cxcd1613-M)"             
+         v-asunto    = "AUTORIZACION FACTURAS(cxcd1613-M)"             
          v-contenido = "<html><head>" + CHR(13) +
                        "<p class=MsoNormal align=center style='text-align:left'><span" + CHR(13) +
                        "style='font-size:10.0pt;font-family:Verdana'>" + 'Se realizo una autorizacion de ' + ttPorAut.TipoDocto + ', por ' + usuario.nom-usuario + '.' + "<o:p></o:p></span></p>" + CHR(13) +
@@ -349,7 +349,7 @@ IF ipAutoriza = TRUE THEN DO:
                    
                    
        IF {sist0001.i} = "DESARROLLO" THEN 
-                ASSIGN v-Para = "crivera@adosa.com.mx".
+                ASSIGN v-Para = "desarrollo10@adosa.com.mx".
             ELSE DO:
                 v-Para = (IF ttPorAut.Importe >= 5000 AND vEfevo >= 3000 THEN 'agomez@adosa.com.mx; ogomez@adosa.com.mx; ' ELSE '') +
                          'dgarza@adosa.com.mx; jgonzalez@adosa.com.mx'.
@@ -359,11 +359,11 @@ IF ipAutoriza = TRUE THEN DO:
     {inva0007.i 
         &Asunto     = "v-asunto"   
         &contenido  = "v-contenido"
-        &Iniciales  = "'JAGR'"
+        &Iniciales  = "'SIS10'"
         &Direccion  = "v-Para"
         &Refer      = "'DIRECTO'"
-        &Attachment = "" 
-    }    
+        &Attachment = ""  
+    }      
                       
 END.   
 

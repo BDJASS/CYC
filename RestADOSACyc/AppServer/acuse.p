@@ -43,7 +43,8 @@ DEFINE TEMP-TABLE ttDocAcuse
     FIELD ImpPago    AS DECIMAL
     FIELD ImpDescPP  AS DECIMAL
     FIELD ImpDescEsp AS DECIMAL
-    FIELD ImpDevol   AS DECIMAL.
+    FIELD ImpDevol   AS DECIMAL
+    FIELD IdMoneda   LIKE DocAcuse.Id-Moneda.
 
 DEFINE TEMP-TABLE ttPagoAcuse
     FIELD IdAcuse         AS CHARACTER
@@ -134,7 +135,8 @@ PROCEDURE GetAcuse:
                 ttDocAcuse.ImpDescPP  = bfDocAcuse.ImpDescPP
                 ttDocAcuse.ImpDescEsp = bfDocAcuse.ImpDescEsp
                 ttDocAcuse.FecDoc     = bfDocAcuse.FecDoc
-                ttDocAcuse.ImpDevol   = bfDocAcuse.ImpDevol.
+                ttDocAcuse.ImpDevol   = bfDocAcuse.ImpDevol
+                ttDocAcuse.IdMoneda   = bfDocAcuse.Id-Moneda.
                 
             IF bfDocAcuse.AntApl > 0 THEN 
             DO:
@@ -235,7 +237,8 @@ PROCEDURE GetAcuse:
                     ttDocAcuse.ImpDescPP  = bfDocAcuse.ImpDescPP
                     ttDocAcuse.ImpDescEsp = bfDocAcuse.ImpDescEsp
                     ttDocAcuse.FecDoc     = bfDocAcuse.FecDoc
-                    ttDocAcuse.ImpDevol   = bfDocAcuse.ImpDevol.
+                    ttDocAcuse.ImpDevol   = bfDocAcuse.ImpDevol
+                    ttDocAcuse.IdMoneda   = bfDocAcuse.Id-Moneda.
             END.   
 
             /* Buscar los PagoAcuses relacionados */
@@ -277,8 +280,9 @@ PROCEDURE GetAcuse:
             END.
         END.    
         
-    END.
+    END.  
       
     DATASET dsAcuse:WRITE-JSON("LONGCHAR", opcJson, TRUE).
+    RETURN.
 END PROCEDURE.
 

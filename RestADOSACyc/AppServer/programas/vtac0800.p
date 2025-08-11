@@ -6,7 +6,7 @@
     Autor   : ALEX
     Fecha   : 15 de Marzo del 2016
 */
-
+ 
 //{/usr2/adosa/includes/sia00000.var}
 
 DEFINE STREAM s-Salida.
@@ -185,84 +185,277 @@ END.
 
 OUTPUT STREAM s-Salida CLOSE.
 */
+DEFINE VARIABLE cFechaHora AS CHARACTER NO-UNDO.
+
+cFechaHora = STRING(TODAY, "99/99/9999") + " " + STRING(TIME, "hh:mm:ss").
 
                 
 DEFINE VARIABLE l-Contenido2 AS CHARACTER NO-UNDO.
 DEFINE VARIABLE l-Detalle    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE l-Detalle2   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE decTotal     AS DECIMAL   NO-UNDO INITIAL 0.
+
 
 /* Encabezado del correo */
-/*
+/* */
 ASSIGN 
 
-    l-Contenido2 = '<!DOCTYPE html> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' +
-                   '<meta name="viewport" content="initial-scale=1.0, width=device-width" />' +
-                   '<meta http-equiv="X-UA-Compatible" content="IE=edge" />' +
-                   '<title>Correo Autorizacion Pedido </title> </head>' +
-                   '<body style="margin: 0; padding: 0; background-color: #ffffff">' +
-                   '<!-- Wrapper general -->' +
-                   '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; padding: 10px 0">'+
-                   '<tr> <td align="center">' +
-                   '<!-- Contenedor principal -->' +
-                   '<table width="600" cellpadding="0" cellspacing="0" border="0"style="background-color: #ffffff">' +
-                  '<!-- Cintillo superior --> ' +
-                  '<tr>' +
-                  '<td colspan="2" style="background-color: #002278; padding: 5px 10px">' +
-                  '<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
-                  '<tr><td align="left" style="font-family: Arial, sans-serif;font-size: 14px;color: #ffffff;">' +
-                  '<a target="_blank" href="https://wa.me/8181581515" style="text-decoration: none; color: #ffffff">' +
-                  '<img src="https://www.adosa.com.mx/media/wysiwyg/nuevohome/mini-wharsapp.png" alt="WhatsApp" width="16" height="16" style=" vertical-align: middle;border: 0;outline: none;text-decoration: none;"/>' +
-                  '<span style="vertical-align: middle; padding-left: 5px">81 8158 1515</span></a>' +
-                  '</td><td align="right" style="font-family: Arial, sans-serif;font-size: 14px;color: #ffffff;">' +
-                  '<a target="_blank" href="https://www.adosa.com.mx/sucursales" style="text-decoration: none; color: #ffffff">Tiendas y sucursales</a>' +
-                  '</td></tr>' +
-                  '</table>' +
-                  '</td>' +
-                  '</tr>' +
-                  '<!-- Header -->' +
-                  '<tr>' +
-                  '<td colspan="2" align="center" style="background-color: #0055b8; padding: 15px 0">' +
-                  '<a target="_blank" href="https://adosa.com.mx" style="display: inline-block; text-decoration: none">' +
-                  '<img src="https://adosa.com.mx/media/email/logo/stores/1/logo.png" alt="Adosa Logo" width="136" style="display: block;border: 0;outline: none;text-decoration: none;"/>' + 
-                  '</a>' +
-                  '</td>' +
-                  '</tr>' +
-                  '<!-- Contenido -->
-                  '<tr>
-                  '<td colspan="2" style="padding: 35px 30px 10px 30px">
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                  <td style="font-family: Arial, sans-serif;font-size: 14px;color: #002278;padding-bottom: 20px;">
-                   
-    */
-    
-    
-    
-    
-    
-    
-    
-    
-    
-  /*
-FOR EACH DetPedido WHERE DetPedido.Id-Pedido = Pedido.Id-Pedido
-    AND DetPedido.Resto = Pedido.Resto NO-LOCK BY DetPedido.Reng:
+    l-Contenido2 = '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' +
+'<meta name="viewport" content="initial-scale=1.0, width=device-width" />' +
+'<meta http-equiv="X-UA-Compatible" content="IE=edge" />' +
+'<title>Correo Autorizacion Pedido</title></head>' +
+'<body style="margin: 0; padding: 0; background-color: #ffffff">' +
+'<!-- Wrapper general -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; padding: 10px 0">' +
+'<tr><td align="center">' +
+'<!-- Contenedor principal -->' +
+'<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff">' +
+'<!-- Cintillo superior -->' +
+'<tr>' +
+'<td colspan="2" style="background-color: #002278; padding: 5px 10px">' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+'<tr><td align="left" style="font-family: Arial, sans-serif;font-size: 14px;color: #ffffff;">' +
+'<a target="_blank" href="https://wa.me/8181581515" style="text-decoration: none; color: #ffffff">' +
+'<img src="https://www.adosa.com.mx/media/wysiwyg/nuevohome/mini-wharsapp.png" alt="WhatsApp" width="16" height="16" style="vertical-align: middle;border: 0;outline: none;text-decoration: none;"/>' +
+'<span style="vertical-align: middle; padding-left: 5px">81 8158 1515</span></a>' +
+'</td><td align="right" style="font-family: Arial, sans-serif;font-size: 14px;color: #ffffff;">' +
+'<a target="_blank" href="https://www.adosa.com.mx/sucursales" style="text-decoration: none; color: #ffffff">Tiendas y sucursales</a>' +
+'</td></tr>' +
+'</table>' +
+'</td>' +
+'</tr>' +
+'<!-- Header -->' +
+'<tr>' +
+'<td colspan="2" align="center" style="background-color: #0055b8; padding: 15px 0">' +
+'<a target="_blank" href="https://adosa.com.mx" style="display: inline-block; text-decoration: none">' +
+'<img src="https://adosa.com.mx/media/email/logo/stores/1/logo.png" alt="Adosa Logo" width="136" style="display: block;border: 0;outline: none;text-decoration: none;"/>' +
+'</a>' +
+'</td>' +
+'</tr>' +
+'<!-- Contenido -->' +
+'<tr>' +
+'<td colspan="2" style="padding: 35px 30px 10px 30px">' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+'<tr>' +
+'<td style="font-family: Arial, sans-serif;font-size: 14px;color: #002278;padding-bottom: 20px;">' +
+'<p style="margin: 0 0 30px 0; font-weight: 700;color: #002a77;font-size: 18px;">' + TRIM(Pedido.RazonSocial) + '</p>' +
+'<p style="margin: 0 0 25px 0">Gracias por tu pedido en Adosa. Una vez que tu paquete haya sido enviado te mandaremos un numero de rastreo.</p>' +
+'<p style="margin: 0 0 25px 0">Si tienes alguna duda sobre tu pedido, envianos un correo electronico a ' +
+'<a href="mailto:ventaenlinea@adosa.com.mx" style="color: #333; text-decoration: none">ventaenlinea@adosa.com.mx</a> o llamanos al ' +
+'<a href="tel:8181581520" style="color: #333; text-decoration: none">8181581520</a>.</p>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Número de pedido y fecha -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+'<tr>' +
+'<td style="padding: 20px 30px">' +
+'<h1 style="margin: 0;font-family: Arial, sans-serif;font-size: 26px;color: #333;text-align: center;border-bottom: 1px solid #cbd2d6;padding: 10px;font-weight: 500;">' +
+'Tu pedido <span style="color: #0093e0; font-weight: 600">' + STRING(l-Pedido) + '</span>' +
+'</h1>' +
+'<p style="margin: 0;font-family: Arial, sans-serif;font-size: 12px;color: #666666;text-align: center;padding: 10px;">' +
+'Colocado el dia: ' + cFechaHora + '</p>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Contenedor info cliente y productos + subtotal -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f5fa; padding: 20px 30px">' +
+'<tr>' +
+'<td style="padding: 0">' +
+'<!-- Info de direccion, facturación y método de pago -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+'<tr>' +
+'<td valign="top" style="width: 50%; padding: 35px 25px 10px 25px">' +
+'<h3 style="margin: 0 0 10px 0;font-family: Arial, sans-serif;font-size: 14px;color: #002278;">Datos Facturacion</h3>' +
+'<p style="margin: 0;font-family: Arial, sans-serif;font-size: 13px;color: #2f4858;line-height: 18px;">' +
+STRING(Pedido.Id-Cliente) + ' ' + Pedido.RazonSocial + '<br />' +
+'RFC:' + Pedido.RFC + '<br />' +
+Pedido.CalleNo + ' ' + Pedido.Colonia + '<br/>' +
+l-Ciudad + ' ' + l-Estado + ' ' + STRING(Pedido.CP) + '<br/>' +
+'</p>' +
+'</td>' +
+'<td valign="top" style="width: 50%; padding: 35px 25px 10px 25px">' +
+'<h3 style="margin: 0 0 10px 0;font-family: Arial, sans-serif;font-size: 14px;color: #002278;">Datos Embarque</h3>' +
+'<p style="margin: 0;font-family: Arial, sans-serif;font-size: 13px;color: #2f4858;line-height: 18px;">' +
+Pedido.RFC + '<br />' +
+'Atencion a : ' + Pedido.RazonSocial1 + '<br />' +
+l-DirEmb + '<br />' +
+TRIM(l-CdEmb) + '<br />' +
+Pedido.Delegacion1 + '<br />' +
+'</p>' +
+'</td>' +  
+'</tr>' +
+'<tr>' +
+'<td valign="top" style="width: 50%; padding: 35px 25px 10px 25px">' +
+'<h3 style="margin: 0 0 10px 0;font-family: Arial, sans-serif;font-size: 14px;color: #002278;">Condicion Venta:</h3>' +
+'<p style="margin: 0;font-family: Arial, sans-serif;font-size: 13px;color: #2f4858;">' + CondVta.Descr + '</p>' +
+'</td>' +
+'<td valign="top" style="width: 50%; padding: 35px 25px 10px 25px">' +
+'<h3 style="margin: 0 0 10px 0;font-family: Arial, sans-serif;font-size: 14px;color: #002278;">Metodo de envio:</h3>' +
+'<p style="margin: 0;font-family: Arial, sans-serif;font-size: 13px;color: #2f4858;">' + l-TipoEntrega + '</p>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<div style="height: 20px; line-height: 20px; font-size: 0">&nbsp;</div>' +
+'<!-- Tabla de productos -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse">' +
+'<thead>' +
+'<tr>' +
+'<th align="left" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #002278;border-bottom: 1px solid #e0e0e0;">Articulos</th>' +
+'<th align="center" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #002278;border-bottom: 1px solid #e0e0e0;">Cantidad</th>' +
+'<th align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #002278;border-bottom: 1px solid #e0e0e0;">Precio</th>' +
+'</tr>' +
+'</thead>' +
+'<tbody>' .
+  
+
+/* Cuerpo de la tabla */
+ASSIGN 
+    l-detalle = "".
+FOR EACH DetPedido 
+    WHERE DetPedido.Id-Pedido = Pedido.Id-Pedido
+    AND DetPedido.Resto     = Pedido.Resto
+    NO-LOCK BY DetPedido.Reng:
+
     FIND ArtPres WHERE ArtPres.Id-Articulo = DetPedido.Id-Articulo
-        AND ArtPres.Id-Pres = DetPedido.Id-Pres NO-LOCK NO-ERROR.
-    FIND Kolor OF DetPedido NO-LOCK NO-ERROR. 
+        AND ArtPres.Id-Pres     = DetPedido.Id-Pres NO-LOCK NO-ERROR.
 
-    ASSIGN
-        l-detalle = l-detalle +
+    FIND Kolor OF DetPedido NO-LOCK NO-ERROR.
+
+    /* Aquí concatenamos una fila del nuevo formato */
+    l-detalle = l-detalle +
         '<tr>' +
-        '<td>' + DetPedido.Id-Articulo + '</td>' +
-        '<td>' + DetPedido.Descr + '</td>' +
-        '<td>' + (IF AVAILABLE Kolor THEN Kolor.Abrev ELSE '') + '</td>' +
-        '<td align="right">' + STRING(DetPedido.CantPed) + '</td>' +
-        '<td>' + (IF AVAILABLE ArtPres THEN ArtPres.Descr ELSE '') + '</td>' +
-        '</tr>'.
-END.   
-*/ 
+        /* Columna Artículos con nombre, SKU, presentación y color */
+        '<td style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;border-bottom: 1px solid #e0e0e0;">' +
+        '<strong style="margin-bottom: 2px; line-height: 1.4;">' + DetPedido.Descr + '</strong><br />' +
+        '<span style="font-size: 14px; color: #666666;margin-bottom: 2px; line-height: 1.4;">SKU: ' + DetPedido.Id-Articulo + '</span><br />' +
+        '<strong style="font-style: italic;margin-bottom: 2px; line-height: 1.4;">Presentaciones</strong><br />' +
+        '<span style="font-size: 14px; color: #666666;margin-bottom: 2px; line-height: 1.4;">' + 
+        (IF AVAILABLE ArtPres THEN ArtPres.Descr ELSE '') + '</span>' +
+        '</td>' +
 
+        /* Columna Cantidad */
+        '<td align="center" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;border-bottom: 1px solid #e0e0e0;">' +
+        STRING(DetPedido.CantPed) +
+        '</td>' +
 
+        /* Columna Precio */
+        '<td align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;border-bottom: 1px solid #e0e0e0;font-weight: 700;">' +
+        '$' + STRING(DetPedido.Importe + DetPedido.IVA, "->>,>>9.99") +
+        '</td>' +
+        '</tr>'. 
+        
+    decTotal =  decTotal + (DetPedido.Importe + DetPedido.IVA).
+END.
+     
+/* Añades el detalle al contenido */
+ASSIGN l-Contenido2 = l-Contenido2 + '<tbody>' + l-detalle + '</tbody>'.
+
+ASSIGN l-Contenido2 = l-Contenido2 +       
+'<tfoot>' +
+'<tr>' + 
+'<td colspan="2" align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;font-weight: 700;">Subtotal</td>' +
+'<td align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;">' + STRING(decTotal, "->>,>>9.99") + '</td>' +
+'</tr>' +
+'<tr>' +
+'<td colspan="2" align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;font-weight: 700;">Cargos por manejos y envio </td>' +
+'<td align="right"style="padding: 10px;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;">' + STRING(decTotal, "->>,>>9.99") + '</td>' +
+'</tr>' +
+'<tr style="border-top:1px solid #e0e0e0">' +
+'<td colspan="2" align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 18px;color: #0d53b1;font-weight: 500;">Total general</td>' +
+'<td align="right" style="padding: 10px;font-family: Arial, sans-serif;font-size: 18px;color: #0d53b1;font-weight: 500;">' + STRING(decTotal, "->>,>>9.99") + '</td>' +
+'</tr>' +
+'</tfoot>' +
+'</table>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- "¿Qué prosigue con mi pedido?" -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 30px;border-bottom: 1px solid #cbd2d6;padding-bottom: 50px;"><tr>' +
+'<td style="font-family: Arial, sans-serif;font-size: 14px;color: #333333;padding: 0 10px;">' +
+'<h2 style="margin: 0 0 10px 0;font-size: 26px;color: #333;text-align: center;font-weight: 500;">¿Que prosigue con mi pedido?</h2>' +
+'<ol style="margin: 0 0 20px 40px; padding: 0">' +  
+'<li style="margin-bottom: 10px;">Esperar un email de confirmacion de embarque</li>' +
+'<li style="margin-bottom: 10px;">Recibir su pedido en un lapso de 3 a 5 dias.</li>' +
+'</ol>' +
+'<p style="margin: 10px 0 0 0;color: #ff0000;text-align: left;font-size: 18px;">Nota: En pedidos foraneos el envio sera por paqueteria estandar y se proporcionara un numero de guia</p>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Botón contacto -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 30px">' +
+'<tr>' +
+'<td align="center" style="padding: 20px 30px">' +
+'<p style="margin: 0 0 10px 0;font-family: Arial, sans-serif;font-size: 14px;color: #2f4858;text-align: left;">' +
+'<strong style="font-weight: 700;">¿Necesitas ayuda o tienes alguna pregunta?</strong>No dudes en ponerte en contacto con nosotros. Estamos aqui para ayudarte.</p>' +
+'<table cellpadding="0" cellspacing="0" border="0" style="margin: 20px auto 0 auto"><tr>' +
+'<td align="center" style="background-color: #0080d9;border-radius: 10px;padding: 10px 20px;">' +
+'<a href="https://adosa.com.mx/contactanos" target="_blank" style="font-family: Arial, sans-serif;font-size: 14px;color: #ffffff;text-decoration: none;display: block;">CONTACTANOS</a>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<p style="margin: 10px 0 0 0;font-family: Arial, sans-serif;font-size: 14px;color: #333333;"> ó Llamanos al <a href="tel:8181581520"style="color: #0055b8; text-decoration: none">81 8158 1520</a>' +
+'</p>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'</td>' +
+'</tr>' +
+'<tr>' +
+'<td>' +
+'<!-- Footer-->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px; background-color: #f9f9f9">' +
+'<tr>' +
+'<td align="left" style="width: 50%;padding: 15px 0;font-family: Arial, sans-serif;font-size: 14px;color: #333333;text-align: left;">' +
+'<a href="https://www.adosa.com.mx/preguntas-frecuentes" target="_blank" style="color: #0055b8;text-decoration: none;margin: 0 10px;">Preguntas frecuentes</a><br/>' +
+'<a href="https://www.adosa.com.mx/aviso-de-privacidad" target="_blank" style="color: #0055b8;text-decoration: none;margin: 0 10px;">Aviso de privacidad</a><br/>' +
+'<a href="https://www.adosa.com.mx/politicas-de-venta" target="_blank" style="color: #0055b8;text-decoration: none;margin: 0 10px;">Terminos y condiciones</a></td>' +
+'<td align="left" style="width: 50%;padding: 15px 0;font-family: Arial, sans-serif;font-size: 14px;color: #333333;text-align: left;">' +
+'<strong style="margin: 10px 0 10px 0; color: #004aad">¡Siguenos!</strong><br/>' +
+'<table cellpadding="0" cellspacing="0" border="0">' +
+'<tr>' +
+'<td>' +
+'<a target="_blank" href="https://www.facebook.com/AdosaMexico"><img src="https://adosa.com.mx/media/wysiwyg/footer/facebook.png" alt="Facebook" width="40" height="40" style="display: block;border: 0;outline: none;text-decoration: none;margin-right: 10px;"/></a>' +
+'</td>' +
+'<td>' +
+'<a target="_blank" href="https://www.instagram.com/adosamexico"><img src="https://adosa.com.mx/media/wysiwyg/footer/instagram.png" alt="Instagram" width="40" height="40" style="display: block;border: 0;outline: none;text-decoration: none;margin-right: 10px;"/></a>' +
+'</td>' +
+'<td>' +
+'<a target="_blank" href="https://www.tiktok.com/@adosaMexico"><img src="https://adosa.com.mx/media/wysiwyg/footer/ticktok.png" alt="TikTok" width="40" height="40"style="display: block;border: 0;outline: none;text-decoration: none;margin-right: 10px;"/></a>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Termina footer -->' +
+'<!-- Copyright ADOSA -->' +
+'<table width="100%" cellpadding="0" cellspacing="0" border="0">' +
+'<tr>' +
+'<td align="left" style="background-color: #002278;padding: 15px 30px;font-family: Arial, sans-serif;font-size: 13px;color: #ffffff;text-align: center;">ABASTECEDORA DE OFICINAS SA DE CV | MEXICO © Todos los derechos reservados.</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Termina copyright ADOSA -->' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Termina contenido -->' +
+'</td>' +
+'</tr>' +
+'</table>' +
+'<!-- Termina contenedor principal -->' +
+'</body>' +
+'</html>'  .  
+
+/*  
+/* Guardar el archivo */
+OUTPUT TO "/home/sis10/pedido.html".
+PUT UNFORMATTED l-Contenido2.
+OUTPUT CLOSE.  
+     
+OS-COMMAND SILENT VALUE("chmod 777 /home/sis10/pedido.html").
+
+*/
 DO ON ERROR UNDO, LEAVE ON ENDKEY UNDO, LEAVE:
     ASSIGN 
         l-eMail = ''.
@@ -311,26 +504,14 @@ DO ON ERROR UNDO, LEAVE ON ENDKEY UNDO, LEAVE:
         
          
         l-eMail = l-eMail + ";" + l-sistemas.  
-        {inva0007.i
-                &Asunto     = "l-Asunto"
-                &contenido  = "l-Contenido2"
-                &Iniciales  = "'JAGR'"
-                &Direccion  = "l-eMail"
-                &Refer      = "'DIRECTO'"
-                &Attachment = "''"  
-          }      
-/* 
-           
-      RUN /usr2/adosa/procs/correo01.p 
-      (INPUT l-eMail,
-      INPUT v-mailde,
-      INPUT l-sistemas,
-      INPUT "", /*nombre del archivo solamente */
-      INPUT "", /*ruta completa del archivo */
-      INPUT l-Asunto,
-      INPUT l-Contenido2,   
-      OUTPUT v-enviado).  
-                
-*/   
-END.   
-END.   
+    
+    {inva0007.i
+            &Asunto     = "l-Asunto"
+            &contenido  = "l-Contenido2"
+            &Iniciales  = "'SIS10'"
+            &Direccion  = "l-eMail"
+            &Refer      = "'DIRECTO'"  
+            &Attachment = "''"  
+      }           
+    END.   
+END.       

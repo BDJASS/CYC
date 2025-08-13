@@ -456,6 +456,30 @@ OUTPUT CLOSE.
 OS-COMMAND SILENT VALUE("chmod 777 /home/sis10/pedido.html").
 
 */
+DEFINE VARIABLE l-RutaHTML AS CHARACTER NO-UNDO.
+DEFINE VARIABLE l-NombreArchivo AS CHARACTER NO-UNDO.
+
+/* Nombre del archivo: pedido_<l-pedido>_<yyyymmdd>.html */
+ASSIGN 
+    l-NombreArchivo = "pedido_" 
+                    + STRING(l-pedido) + "_" 
+                    + STRING(YEAR(TODAY),"9999")
+                    + STRING(MONTH(TODAY),"99")
+                    + STRING(DAY(TODAY),"99")
+                    + ".html".
+
+/* Ruta final */
+ASSIGN l-RutaHTML = "/usr3/tmp/" + l-NombreArchivo.
+
+/* Guardar HTML */
+OUTPUT TO VALUE(l-RutaHTML).
+PUT UNFORMATTED STRING(l-Contenido2). 
+OUTPUT CLOSE.
+
+/* Dar permisos */
+OS-COMMAND SILENT VALUE("chmod 777 " + l-RutaHTML).
+
+/* */
 DO ON ERROR UNDO, LEAVE ON ENDKEY UNDO, LEAVE:
     ASSIGN 
         l-eMail = ''.
@@ -503,15 +527,17 @@ DO ON ERROR UNDO, LEAVE ON ENDKEY UNDO, LEAVE:
             v-mailde = v-mailde + CHR(1) + "No,No".
         
          
-        l-eMail = l-eMail + ";" + l-sistemas.  
+      //  l-eMail = l-eMail + ";" + l-sistemas.  
+        ASSIGN      
+        l-eMail = l-eMail + ";"+  l-sistemas.    
     
     {inva0007.i
             &Asunto     = "l-Asunto"
-            &contenido  = "l-Contenido2"
+            &contenido  = "'PEDIDO AUTORIZADO, FAVOR DE REVISAR ARCHIVO ADJUNTO PARA MAS DETALLE'"
             &Iniciales  = "'SIS10'"
             &Direccion  = "l-eMail"
             &Refer      = "'DIRECTO'"  
-            &Attachment = "''"  
+            &Attachment = "l-RutaHTML"    
       }           
     END.   
-END.       
+END.         

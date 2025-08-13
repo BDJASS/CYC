@@ -7,8 +7,9 @@
   /MovimientosClienteEstadistica
 
 
-
-
+Ticket 1519 ajuste para datos que vienen en null (?)
+            Enviarlos en 0
+            12082025
  ****************************************************************************** */
 
 
@@ -188,5 +189,17 @@ END.
         END.
  END. 
 
+/*  12082025
+FOR EACH ttEstadistica NO-LOCK:
+    /* Reemplazar NULL por 0 para los campos ventas y acumulado */
+    IF ttEstadistica.ventas = ? THEN
+        ttEstadistica.ventas = 0.
 
+    IF ttEstadistica.acumulado = ? THEN
+        ttEstadistica.acumulado = 0.
+
+    /* Aquí sigue tu lógica */
+END. 
+
+*/
 END PROCEDURE.

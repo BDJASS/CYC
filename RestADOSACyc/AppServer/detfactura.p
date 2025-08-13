@@ -11,7 +11,10 @@
     Author(s)   : sis6
     Created     : Mon Jul 28 12:44:13 CST 2025
     Notes       :
-  ----------------------------------------------------------------------*/
+  ----------------------------------------------------------------------
+    Ajuste 12082025 Cambio enviado CRYB
+  
+  */
 
 /* ***************************  Definitions  ************************** */
 
@@ -310,9 +313,9 @@ PROCEDURE GetDetFactura:
             ttFactura.Guias            = IF AVAILABLE Guia THEN Guia.Id-Guia ELSE ""
             ttFactura.Tarimas          = Factura.Tarimas
             ttFactura.FolioFiscal      = Factura.Folioe
-            ttFactura.Vendedor         = Remision.Id-Vendedor
-            ttFactura.RFC              = Remision.RFC
-            ttFactura.UUID             = Remision.UUID.       
+            ttFactura.Vendedor         = Factura.Id-Vendedor  /* 12082025 */
+            ttFactura.RFC              = Factura.RFC          /* 12082025 */
+            ttFactura.UUID             = Factura.UUID.        /* 12082025 */
 
         /* Obtener el detalle de los artículos vendidos */  
         FOR EACH DetFactura OF Factura NO-LOCK:
@@ -322,7 +325,7 @@ PROCEDURE GetDetFactura:
             ASSIGN 
                 l-Pres = IF AVAILABLE ArtPres THEN ArtPres.Descr ELSE ".".     
             
-            FIND FIRST ArtCol WHERE ArtCol.Id-Articulo = DetRemis.Id-Articulo AND ArtCol.Id-color = DetRemis.Id-color NO-LOCK NO-ERROR.    
+            FIND FIRST ArtCol WHERE ArtCol.Id-Articulo = DetFactura.Id-Articulo AND ArtCol.Id-color = DetFactura.Id-color NO-LOCK NO-ERROR.    
             FIND Kolor OF ArtCol NO-LOCK NO-ERROR.
                 
             CREATE ttDetFactura.
@@ -338,7 +341,7 @@ PROCEDURE GetDetFactura:
         END.
         
         
-    END.
+    END.  
     
     
 

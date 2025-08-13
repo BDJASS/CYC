@@ -681,4 +681,9 @@
       <prgs:param name="IdFactura" type="QUERY"/>
     </prgs:operation>
   </prgs:resource>
+  <prgs:resource consumes="application/json" name="_Notificacion" path="/Notificacion" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/notificacion.pidl::com.progress.openedge.pdt.bpmbindings" name="notificacion..BuscaNoti" produces="application/json" verb="GET">
+      <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
 </prgs:model>

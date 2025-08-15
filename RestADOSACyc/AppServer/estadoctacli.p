@@ -5,7 +5,7 @@
     Purpose     : 
 
     Syntax      :
-
+v
     Description : 
 
     Author(s)   : sis6
@@ -29,7 +29,7 @@
    Ticket 1552 Parametro para indicar en el Proceso de Adelantado 
                 cuando una factura tiene entrega Parcial 
                 ( Si entrego pero hay productos pendientes)
-                JASS14082025
+                JASS14082025  
                                                               
   
 */

@@ -4,12 +4,12 @@
     Purpose     : Programa que regresa la cantidad de pedidos autorizados, 
                   cancelados y rechazados por empleado en el mes actual
     Syntax      : /PedidoEmpMes   */
-
+ 
 DEFINE VARIABLE vFecIni AS DATE NO-UNDO.
 DEFINE VARIABLE vFecFin AS DATE NO-UNDO.
 DEFINE VARIABLE vCont AS INTEGER NO-UNDO.   
 
-
+   
 DEFINE VARIABLE vLimite LIKE Cliente.Limite NO-UNDO.  
 DEFINE VARIABLE vLimiteMaximo LIKE Cliente.Limite NO-UNDO.
 DEFINE VARIABLE vFolio AS CHARACTER NO-UNDO.
@@ -215,7 +215,8 @@ END.
 INPUT CLOSE.
 
 FOR EACH ttFactura EXCLUSIVE-LOCK,
-    FIRST Cliente OF ttFactura WHERE Cliente.Id-ClaseCte = ipClaseCte NO-LOCK,
+    FIRST Cliente OF ttFactura NO-LOCK,
+  //  FIRST Cliente OF ttFactura WHERE Cliente.Id-ClaseCte = ipClaseCte NO-LOCK,
     FIRST ClaseCte WHERE ClaseCte.Id-ClaseCte = Cliente.Id-ClaseCte NO-LOCK:
     
     FIND FIRST BlkAut WHERE BlkAut.Id-Cliente = Cliente.Id-Cliente NO-LOCK NO-ERROR.
@@ -858,7 +859,7 @@ DEFINE OUTPUT PARAMETER opError AS CHARACTER NO-UNDO.
                   
             RUN programas/vtac0800.p(INPUT bfPedido.Id-Pedido,    
                                      INPUT bfPedido.Resto) NO-ERROR.                                     
-             
+            
             IF bfPedido.Id-Alm = "02B" THEN                                           
                 RUN /usr2/adosa/akubica/vtac0200cc.p(INPUT bfPedido.Id-Pedido,  
                                                      INPUT bfPedido.Resto,
@@ -1120,17 +1121,17 @@ DEFINE OUTPUT PARAMETER opError AS CHARACTER NO-UNDO.
                          (IF Pedido.Id-Alm = '12' THEN '; hterrazas@adosa.com.mx; jge@adosa.com.mx' ELSE '').
             END.
 
-                               
+                                 
             {inva0007.i
                 &Asunto     = "v-asunto"
                 &contenido  = "v-contenido"
-                &Iniciales  = "'JAGR'"
+                &Iniciales  = "'SIS10'"
                 &Direccion  = "v-Para"
                 &Refer      = "'DIRECTO'"
                 &Attachment = ""
             }
-            
-            
+                
+              
         END.
          
     END.

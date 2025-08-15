@@ -7,7 +7,7 @@
     Author(s)   : sis10
     Created     : Fecha actual
   ----------------------------------------------------------------------*/
-
+ 
 /* ***************************  Definitions  ************************** */
 
 BLOCK-LEVEL ON ERROR UNDO, THROW. /* Manejo de errores global */
@@ -873,7 +873,7 @@ PROCEDURE EnviaCorreo.
       {programas/inva0007.i
                 &Asunto     = "l-Asunto"
                 &contenido  = "l-Contenido"
-                &Iniciales  = "'JAGR'"
+                &Iniciales  = "'SIS10'"
                 &Direccion  = "l-Mail"
                 &Refer      = "'DIRECTO'"
                 &Attachment = ""

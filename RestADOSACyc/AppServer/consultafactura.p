@@ -14,12 +14,15 @@
 
 /* ***************************  Definitions  ************************** */
 
-BLOCK-LEVEL ON ERROR UNDO, THROW.
+BLOCK-LEVEL ON ERROR UNDO, THROW.  
 
 DEFINE TEMP-TABLE ttFactura             
     FIELD IdFactura        AS CHARACTER FORMAT "x(15)"
     FIELD IdCliente        AS INTEGER                  
-    FIELD RazonSocial      AS CHARACTER FORMAT "x(40)".
+    FIELD RazonSocial      AS CHARACTER FORMAT "x(40)"
+    FIELD FechaFac         AS DATE
+    FIELD Vendedor         AS CHARACTER
+    FIELD TotalFac         AS DECIMAL.
     
      
 
@@ -48,7 +51,7 @@ DEFINE VARIABLE lFiltroPorFactura AS LOGICAL NO-UNDO.
 DEFINE VARIABLE lFiltroPorCliente AS LOGICAL NO-UNDO.
 DEFINE VARIABLE lFiltroPorVendedor AS LOGICAL NO-UNDO.
 
-/* Determinar si es consulta general o por factura espec�fica */
+/* Determinar si es consulta general o por factura específica */
 ASSIGN 
     lFiltroPorFactura = (pFactura <> "" AND pFactura <> ? AND pFactura <> "0")
     lFiltroPorCliente = (pCliente <> 0 AND pCliente <> ?)
@@ -57,12 +60,16 @@ ASSIGN
         /* Primero procesar Remisiones */
         IF lFiltroPorFactura THEN DO:
             FOR EACH Remision WHERE Remision.Id-Remision = pFactura NO-LOCK:
-                
+                FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Remision.Id-Vendedor NO-LOCK NO-ERROR.
+                FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                 CREATE ttFactura.
                 ASSIGN 
                     ttFactura.IdFactura = Remision.Id-Remision
                     ttFactura.IdCliente = Remision.Id-Cliente
-                    ttFactura.RazonSocial = Remision.RazonSocial.
+                    ttFactura.RazonSocial = Remision.RazonSocial
+                    ttFactura.FechaFac = Remision.FecReg
+                    ttFactura.Vendedor = TRIM(Remision.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                    ttFactura.TotalFac = Remision.Tot.
             END.
         END.
         ELSE DO:
@@ -70,24 +77,32 @@ ASSIGN
                 FOR EACH Remision WHERE Remision.Id-Cliente = pCliente 
                                     AND Remision.FecReg >= pFechaIni
                                     AND Remision.FecReg <= pFechaFin NO-LOCK:
-                    
+                    FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Remision.Id-Vendedor NO-LOCK NO-ERROR.
+                    FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                     CREATE ttFactura.
                     ASSIGN 
                         ttFactura.IdFactura = Remision.Id-Remision
                         ttFactura.IdCliente = Remision.Id-Cliente
-                        ttFactura.RazonSocial = Remision.RazonSocial.
+                        ttFactura.RazonSocial = Remision.RazonSocial
+                        ttFactura.FechaFac = Remision.FecReg
+                        ttFactura.Vendedor = TRIM(Remision.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                        ttFactura.TotalFac = Remision.Tot.
                 END.
             END.
             ELSE DO:
                 FOR EACH Remision WHERE Remision.Id-Vendedor = pVendedor 
                                     AND Remision.FecReg >= pFechaIni 
                                     AND Remision.FecReg <= pFechaFin NO-LOCK:
-                    
+                    FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Remision.Id-Vendedor NO-LOCK NO-ERROR.
+                    FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                     CREATE ttFactura.
                     ASSIGN 
                         ttFactura.IdFactura = Remision.Id-Remision
                         ttFactura.IdCliente = Remision.Id-Cliente
-                        ttFactura.RazonSocial = Remision.RazonSocial.
+                        ttFactura.RazonSocial = Remision.RazonSocial
+                        ttFactura.FechaFac = Remision.FecReg
+                        ttFactura.Vendedor = TRIM(Remision.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                        ttFactura.TotalFac = Remision.Tot.
                 END.
             END.        
         END. 
@@ -95,12 +110,16 @@ ASSIGN
         /* Luego procesar Facturas */
         IF lFiltroPorFactura THEN DO:
             FOR EACH Factura WHERE Factura.Id-Factura = pFactura NO-LOCK:
-                
+                FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Factura.Id-Vendedor NO-LOCK NO-ERROR.
+                FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                 CREATE ttFactura.
                 ASSIGN 
                     ttFactura.IdFactura = Factura.Id-Factura
                     ttFactura.IdCliente = Factura.Id-Cliente
-                    ttFactura.RazonSocial = Factura.RazonSocial.
+                    ttFactura.RazonSocial = Factura.RazonSocial
+                    ttFactura.FechaFac = Factura.FecReg
+                    ttFactura.Vendedor = TRIM(Factura.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                    ttFactura.TotalFac = Factura.Tot.
             END.
         END.
         ELSE DO:
@@ -108,24 +127,32 @@ ASSIGN
                 FOR EACH Factura WHERE Factura.Id-Cliente = pCliente 
                                     AND Factura.FecReg >= pFechaIni
                                     AND Factura.FecReg <= pFechaFin NO-LOCK:
-                    
+                    FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Factura.Id-Vendedor NO-LOCK NO-ERROR.
+                    FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                     CREATE ttFactura.
                     ASSIGN 
                         ttFactura.IdFactura = Factura.Id-Factura
                         ttFactura.IdCliente = Factura.Id-Cliente
-                        ttFactura.RazonSocial = Factura.RazonSocial.
+                        ttFactura.RazonSocial = Factura.RazonSocial
+                        ttFactura.FechaFac = Factura.FecReg
+                        ttFactura.Vendedor = TRIM(Factura.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                        ttFactura.TotalFac = Factura.Tot.
                 END.
             END.
             ELSE DO:
                 FOR EACH Factura WHERE Factura.Id-Vendedor = pVendedor 
                                     AND Factura.FecReg >= pFechaIni 
                                     AND Factura.FecReg <= pFechaFin NO-LOCK:
-                    
+                    FIND LAST Vendedor WHERE Vendedor.Id-Vendedor = Factura.Id-Vendedor NO-LOCK NO-ERROR.
+                    FIND LAST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
                     CREATE ttFactura.
                     ASSIGN 
                         ttFactura.IdFactura = Factura.Id-Factura
                         ttFactura.IdCliente = Factura.Id-Cliente
-                        ttFactura.RazonSocial = Factura.RazonSocial.
+                        ttFactura.RazonSocial = Factura.RazonSocial
+                        ttFactura.FechaFac = Factura.FecReg
+                        ttFactura.Vendedor = TRIM(Factura.Id-Vendedor) + " " + TRIM(empleado.Nombre)
+                        ttFactura.TotalFac = Factura.Tot.
                 END.
             END.        
         END.

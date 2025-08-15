@@ -398,10 +398,10 @@ PROCEDURE EnviaLiga:
         
         v-para   = v-para + ";" + l-sistemas.  
     /* CORREO PARA EL DESTINO */
-     {programas/inva0007.i
+     {programas/inva0007.i   
                 &Asunto     = "l-Asunto"
                 &contenido  = "l-Contenido"
-                &Iniciales  = "'JAGR'"
+                &Iniciales  = "'SIS10'"
                 &Direccion  = "v-para"
                 &Refer      = "'DIRECTO'"
                 &Attachment = ""
@@ -413,7 +413,7 @@ PROCEDURE EnviaLiga:
       {programas/inva0007.i
                 &Asunto     = "l-asunto2"
                 &contenido  = "l-contenido"
-                &Iniciales  = "'JAGR'"
+                &Iniciales  = "'SIS10'"
                 &Direccion  = "v-para2"
                 &Refer      = "'DIRECTO'"
                 &Attachment = ""

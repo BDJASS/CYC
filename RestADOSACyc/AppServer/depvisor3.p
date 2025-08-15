@@ -48,6 +48,10 @@
                                       deposita Tesoreria ] 
                 JASS17072025    
    
+  Ticket 1497   En Santander se quito las facturas de Cotiza - Pedido
+                para que no le salgan a cliente 3 cuando esta en contado
+                ya que no se utilizan y son muchas.
+                JASS08082025
 */
 /* ***************************  Definitions  ************************** */
 
@@ -731,6 +735,7 @@ PROCEDURE MovimientosContado:
                               
             IF Pedido.Id-Moneda > 1 THEN NEXT.  
             IF Pedido.Cancelado THEN NEXT.
+            IF tt-Cliente.Id-Cliente = 3 THEN NEXT. /* JASS08082025 */
         
         // RNPC 2020-01-15 - Quito pedidos con monto 0 y pedidos de tiendas
             IF Pedido.Tot = 0 THEN NEXT.
@@ -800,7 +805,8 @@ PROCEDURE MovimientosContado:
         FOR EACH Cot WHERE
             Cot.Id-Cliente = tt-Cliente.Id-Cliente AND
             Cot.FecReg > (TODAY - 90) NO-LOCK:
-                 
+            
+            IF tt-Cliente.Id-Cliente = 3 THEN NEXT.     /* JASS08082025 */ 
             IF (Cot.FecReg + Cot.Vigencia) < TODAY THEN NEXT.
              
             FIND FIRST Pedido WHERE Pedido.Id-Cot = Cot.Id-Cot NO-LOCK NO-ERROR.
@@ -940,7 +946,7 @@ PROCEDURE MovimientosContado:
                 ttDocumentos.SaldoSinDsc = Devolucion.Tot * -1
                 ttDocumentos.TipoDoc     = "DEV".                                              
         END.      
-    END.     
+    END.      
     
 /* ***********DEBUG **********
 FOR EACH ttDocumentos NO-LOCK BY ttDocumentos.FecReg:

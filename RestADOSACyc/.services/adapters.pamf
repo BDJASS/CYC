@@ -2084,8 +2084,8 @@
   &lt;mapping:mapFault name=&quot;default_fault&quot;/>&#xD;
 &lt;/mapping:messageMapping></lm:properties>
             <lm:properties name="_PedidoEmpMes::poraut..PostAutorizador::POST">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;
-&lt;mapping:messageMapping xmlns:mapping=&quot;http://www.progress.com/caf/mapping1.0&quot; xmlns:metadata=&quot;http://www.progress.com/caf/mapping1.0/toolingMetadata&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;>&#xD;
-  &lt;metadata:toolingMetadata>&#xD;
+&lt;mapping:messageMapping xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mapping=&quot;http://www.progress.com/caf/mapping1.0&quot; xmlns:metadata=&quot;http://www.progress.com/caf/mapping1.0/toolingMetadata&quot;>&#xD;
+  &lt;metadata:toolingMetadata xsi:type=&quot;metadata:toolingMetadata&quot;>&#xD;
     &lt;metadata:mapInput>&#xD;
       &lt;metadata:source>&#xD;
         &lt;metadata:mappablesData displayName=&quot;Autoriza&quot; expressionName=&quot;${rest.queryparam['Autoriza']}&quot; mappableType=&quot;MANUAL&quot;/>&#xD;
@@ -2095,7 +2095,10 @@
     &lt;/metadata:mapInput>&#xD;
     &lt;metadata:mapOutput>&#xD;
       &lt;metadata:source/>&#xD;
-      &lt;metadata:target/>&#xD;
+      &lt;metadata:target>&#xD;
+        &lt;metadata:mappablesData displayName=&quot;vIdError&quot; expressionName=&quot;${json.object['response'].boolean['vIdError']}&quot; mappableType=&quot;MANUAL&quot;/>&#xD;
+        &lt;metadata:mappablesData displayName=&quot;vRespuesta&quot; expressionName=&quot;${json.object['response'].string['vRespuesta']}&quot; mappableType=&quot;MANUAL&quot;/>&#xD;
+      &lt;/metadata:target>&#xD;
     &lt;/metadata:mapOutput>&#xD;
   &lt;/metadata:toolingMetadata>&#xD;
   &lt;mapping:mapInput>&#xD;
@@ -2103,7 +2106,10 @@
     &lt;mapping:rule action=&quot;None&quot; resource=&quot;&quot; source=&quot;${rest.queryparam['User']}&quot; target=&quot;${idl.param['ipUser']}&quot; type=&quot;INTERFACE_PARAM&quot;/>&#xD;
     &lt;mapping:rule action=&quot;None&quot; resource=&quot;&quot; source=&quot;${http.body}&quot; target=&quot;${idl.param['ttPorAut']}&quot; type=&quot;INTERFACE_PARAM&quot;/>&#xD;
   &lt;/mapping:mapInput>&#xD;
-  &lt;mapping:mapOutput/>&#xD;
+  &lt;mapping:mapOutput>&#xD;
+    &lt;mapping:rule action=&quot;None&quot; resource=&quot;&quot; source=&quot;${idl.param['vIdError']}&quot; target=&quot;${json.object['response'].boolean['vIdError']}&quot; type=&quot;INTERFACE_PARAM&quot;/>&#xD;
+    &lt;mapping:rule action=&quot;None&quot; resource=&quot;&quot; source=&quot;${idl.param['vRespuesta']}&quot; target=&quot;${json.object['response'].string['vRespuesta']}&quot; type=&quot;INTERFACE_PARAM&quot;/>&#xD;
+  &lt;/mapping:mapOutput>&#xD;
   &lt;mapping:mapFault name=&quot;default_fault&quot;/>&#xD;
 &lt;/mapping:messageMapping></lm:properties>
             <lm:properties name="_PedidoEmpMes::poraut..PutAutorizarPedido::PUT">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;

@@ -3,62 +3,62 @@
 */
 
 DEFINE VARIABLE v-NomVend AS CHARACTER NO-UNDO.
-DEFINE VARIABLE v-SaldoPed AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vSaldo AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vPedSaldo AS DECIMAL NO-UNDO.
-DEFINE VARIABLE v-DC AS INTEGER NO-UNDO.
-DEFINE VARIABLE v-PromPago AS DECIMAL NO-UNDO.
-DEFINE VARIABLE l-FecDep AS DATE NO-UNDO.
-DEFINE VARIABLE l-Acuse LIKE Acuse.Id-Acuse NO-UNDO.
-DEFINE VARIABLE l-ImpPago AS DECIMAL NO-UNDO.
-DEFINE VARIABLE l-SumaDoc AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vTotChDep AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vTotFac AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vEfevo AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vChNoDep AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vTotPed AS DECIMAL NO-UNDO.
-DEFINE VARIABLE l-Importe AS DECIMAL NO-UNDO.
-DEFINE VARIABLE v-Asunto AS CHARACTER NO-UNDO.
-DEFINE VARIABLE v-Contenido AS CHARACTER NO-UNDO.
-DEFINE VARIABLE v-Limite2 AS DECIMAL NO-UNDO.
-DEFINE VARIABLE v-LimiteMaximo AS DECIMAL NO-UNDO.
-DEFINE VARIABLE v-Disponible AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vSaldoV30 AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vSaldoV40 AS DECIMAL NO-UNDO.
-DEFINE VARIABLE vSaldoVenc AS DECIMAL NO-UNDO.
-DEFINE VARIABLE v-Para AS CHARACTER NO-UNDO.
+DEFINE VARIABLE v-SaldoPed     AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vSaldo         AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vPedSaldo      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE v-DC           AS INTEGER   NO-UNDO.
+DEFINE VARIABLE v-PromPago     AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-FecDep       AS DATE      NO-UNDO.
+DEFINE VARIABLE l-Acuse        LIKE Acuse.Id-Acuse NO-UNDO.
+DEFINE VARIABLE l-ImpPago      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-SumaDoc      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vTotChDep      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vTotFac        AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vEfevo         AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vChNoDep       AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vTotPed        AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-Importe      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE v-Asunto       AS CHARACTER NO-UNDO.
+DEFINE VARIABLE v-Contenido    AS CHARACTER NO-UNDO.
+DEFINE VARIABLE v-Limite2      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE v-LimiteMaximo AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE v-Disponible   AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vSaldoV30      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vSaldoV40      AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE vSaldoVenc     AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE v-Para         AS CHARACTER NO-UNDO.
 DEFINE BUFFER b-MovCliente FOR MovCliente.
 DEFINE BUFFER b-HistMovCte FOR HistMovCte.
-DEFINE BUFFER bfPedido FOR Pedido.
+DEFINE BUFFER bfPedido     FOR Pedido.
 
 
 DEFINE TEMP-TABLE ttPorAut
-    FIELD Estatus AS CHARACTER /* AUTORIZADO, PENDIENTE, RECHAZADO, CANCELADO */ 
-    FIELD Orden AS INTEGER 
-    FIELD IdClaseCte LIKE Cliente.Id-ClaseCte
+    FIELD Estatus        AS CHARACTER /* AUTORIZADO, PENDIENTE, RECHAZADO, CANCELADO */ 
+    FIELD Orden          AS INTEGER 
+    FIELD IdClaseCte     LIKE Cliente.Id-ClaseCte
     FIELD NombreClaseCte LIKE ClaseCte.Descr
-    FIELD IdCliente LIKE Cliente.Id-Cliente
-    FIELD RazonSocial LIKE Cliente.RazonSocial
-    FIELD Bloqueado AS LOGICAL FORMAT "SI/NO"
-    FIELD TipoBloqueo AS CHARACTER 
-    FIELD Documento AS CHARACTER 
-    FIELD TipoDocto AS CHARACTER /* Factura, PEDIDO */
-    FIELD Cond AS CHARACTER /* CONTADO, CREDITO */
-    FIELD FecReg AS DATE 
-    FIELD HorReg AS CHARACTER 
-    FIELD Importe LIKE Pedido.Tot
-    FIELD Plazo AS INTEGER FORMAT "ZZ9"
-    FIELD Sucursal AS CHARACTER 
-    FIELD NomVendedor AS CHARACTER 
+    FIELD IdCliente      LIKE Cliente.Id-Cliente
+    FIELD RazonSocial    LIKE Cliente.RazonSocial
+    FIELD Bloqueado      AS LOGICAL   FORMAT "SI/NO"
+    FIELD TipoBloqueo    AS CHARACTER 
+    FIELD Documento      AS CHARACTER 
+    FIELD TipoDocto      AS CHARACTER /* Factura, PEDIDO */
+    FIELD Cond           AS CHARACTER /* CONTADO, CREDITO */
+    FIELD FecReg         AS DATE 
+    FIELD HorReg         AS CHARACTER 
+    FIELD Importe        LIKE Pedido.Tot
+    FIELD Plazo          AS INTEGER   FORMAT "ZZ9"
+    FIELD Sucursal       AS CHARACTER 
+    FIELD NomVendedor    AS CHARACTER 
     FIELD NomResponsable AS CHARACTER
-    FIELD FecAutorizado AS DATE
-    FIELD Motivo AS CHARACTER
-    FIELD Desactivado AS LOGICAL
-    FIELD SaldoVenc AS DECIMAL
-    FIELD Saldo AS DECIMAL
-    FIELD IdUbic AS CHARACTER 
-    FIELD RecAuto AS RECID
-    FIELD IdVendedor LIKE Vendedor.Id-Vendedor. 
+    FIELD FecAutorizado  AS DATE
+    FIELD Motivo         AS CHARACTER
+    FIELD Desactivado    AS LOGICAL
+    FIELD SaldoVenc      AS DECIMAL
+    FIELD Saldo          AS DECIMAL
+    FIELD IdUbic         AS CHARACTER 
+    FIELD RecAuto        AS RECID
+    FIELD IdVendedor     LIKE Vendedor.Id-Vendedor. 
 
 
 
@@ -66,9 +66,33 @@ DEFINE TEMP-TABLE ttPorAut
 DEFINE INPUT PARAMETER ipAutoriza AS LOGICAL NO-UNDO.
 DEFINE INPUT PARAMETER ipUser AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER TABLE FOR ttPorAut.
-
+DEFINE OUTPUT PARAMETER Respuesta AS CHARACTER NO-UNDO.
+DEFINE OUTPUT PARAMETER IdError AS LOGICAL NO-UNDO INITIAL FALSE. 
 
 FIND FIRST ttPorAut NO-LOCK NO-ERROR.
+
+IF ipAutoriza = TRUE THEN 
+DO:
+    /* REVISA SI LA FACTURA YA FUE AUTORIZADA POR ALGUIEN MAS */ 
+  
+    FIND FIRST Autorizacion 
+    WHERE Autorizacion.Id-Cliente = ttPorAut.IdCliente
+      AND Autorizacion.FecReg     = TODAY
+      AND Autorizacion.Rectipo    = ttPorAut.RecAuto
+      AND Autorizacion.Tipo       = ttPorAut.TipoDocto
+      AND Autorizacion.Importe    = ttPorAut.Importe
+      AND Autorizacion.Id-Ubic    = ttPorAut.IdUbic EXCLUSIVE-LOCK NO-WAIT NO-ERROR.
+
+    IF AVAILABLE Autorizacion THEN 
+    DO:
+         ASSIGN Respuesta = "La Factura fue autorizada por " +  Autorizacion.Id-Autoriza  
+                IdError   = TRUE.          
+        /* Ya existe, no crear otra */
+         LOG-MANAGER:WRITE-MESSAGE("Factura ya autorizada anteriormente por: " + STRING(Autorizacion.Id-Autoriza)). 
+        RELEASE Autorizacion.   /* libera el lock */                
+        RETURN.
+    END.     
+END.         
 
 CREATE Autorizacion.
 ASSIGN 
@@ -85,7 +109,8 @@ ASSIGN
     Autorizacion.Id-Ubic     = ttPorAut.IdUbic
     Autorizacion.Campo2      = (IF ipAutoriza = TRUE THEN "" ELSE "FALSE").
 
-IF ipAutoriza = TRUE THEN DO:
+IF ipAutoriza = TRUE THEN 
+DO:
     FIND Cliente WHERE Cliente.Id-Cliente = ttPorAut.idCliente NO-LOCK NO-ERROR.
     FIND Ciudad WHERE Ciudad.id-Ciudad = cliente.id-Ciudad NO-LOCK NO-ERROR.
     IF AVAILABLE Ciudad THEN
@@ -99,18 +124,18 @@ IF ipAutoriza = TRUE THEN DO:
     vSaldo = 0.
     vPedSaldo = 0.
     FOR EACH Pedido WHERE Pedido.Id-Cliente = Cliente.id-cliente
-                      AND Pedido.Id-Estatus >= -1
-                      AND Pedido.Id-Estatus < 5
-                      AND Pedido.EnFirme = TRUE NO-LOCK:
+        AND Pedido.Id-Estatus >= -1
+        AND Pedido.Id-Estatus < 5
+        AND Pedido.EnFirme = TRUE NO-LOCK:
         ASSIGN 
-            vSaldo = vSaldo + Pedido.Subtotal
+            vSaldo    = vSaldo + Pedido.Subtotal
             vPedSaldo = vPedSaldo + Pedido.Subtotal.       
     END. /* del pedido */  
 
     ASSIGN
-        v-limite2       = cliente.limite
-        v-limitemaximo  = (cliente.limite * 1.5 )
-        v-disponible    = v-limite2 - vSaldo.
+        v-limite2      = cliente.limite
+        v-limitemaximo = (cliente.limite * 1.5 )
+        v-disponible   = v-limite2 - vSaldo.
 
     ASSIGN
         v-saldoped = IF vSaldo > 0 THEN vSaldo - vPedSaldo ELSE 0.
@@ -118,9 +143,9 @@ IF ipAutoriza = TRUE THEN DO:
     FIND FIRST usuario WHERE usuario.Id-user = ipUser NO-LOCK NO-ERROR.
 
     RUN cxcb0270.p (INPUT Cliente.Id-Cliente, 
-                    INPUT TODAY,
-                    OUTPUT v-dc,
-                    OUTPUT v-prompago).
+        INPUT TODAY,
+        OUTPUT v-dc,
+        OUTPUT v-prompago).
     
     IF v-dc = ? THEN
         v-dc = 0.
@@ -131,147 +156,166 @@ IF ipAutoriza = TRUE THEN DO:
     l-Acuse = "".
     l-ImpPago = 0.
     FOR EACH Acuse WHERE Acuse.Id-Cliente = Cliente.Id-Cliente NO-LOCK:
-       IF (l-fecdep = ? OR Acuse.fecdep > l-fecdep) AND 
-          Acuse.estatus <> 3 THEN DO:
-          l-SumaDoc = 0.
-          IF Acuse.Tipo <> "A" THEN DO:
-             FOR EACH DocAcuse WHERE DocAcuse.Id-Acuse = Acuse.Id-Acuse NO-LOCK:
-                 l-SumaDoc = l-SumaDoc + DocAcuse.imppago.
-             END.
-          END.
-          ELSE DO:
-             FOR EACH PagoAcuse WHERE PagoAcuse.Id-Acuse = Acuse.Id-Acuse NO-LOCK:
-                 l-SumaDoc = l-SumaDoc + PagoAcuse.Importe.
-             END.
-          END.
-          IF l-SumaDoc > 0 THEN
-             ASSIGN l-Acuse = Acuse.Id-Acuse
-                    l-fecdep = Acuse.fecdep
+        IF (l-fecdep = ? OR Acuse.fecdep > l-fecdep) AND 
+            Acuse.estatus <> 3 THEN 
+        DO:
+            l-SumaDoc = 0.
+            IF Acuse.Tipo <> "A" THEN 
+            DO:
+                FOR EACH DocAcuse WHERE DocAcuse.Id-Acuse = Acuse.Id-Acuse NO-LOCK:
+                    l-SumaDoc = l-SumaDoc + DocAcuse.imppago.
+                END.
+            END.
+            ELSE 
+            DO:
+                FOR EACH PagoAcuse WHERE PagoAcuse.Id-Acuse = Acuse.Id-Acuse NO-LOCK:
+                    l-SumaDoc = l-SumaDoc + PagoAcuse.Importe.
+                END.
+            END.
+            IF l-SumaDoc > 0 THEN
+                ASSIGN l-Acuse   = Acuse.Id-Acuse
+                    l-fecdep  = Acuse.fecdep
                     l-ImpPago = l-SumaDoc.
-       END.
+        END.
     END.
     FOR EACH DetAnticipo WHERE (DetAnticipo.FecReg >= l-fecdep OR l-fecdep = ?) NO-LOCK,
         EACH Anticipo WHERE Anticipo.Id-Anticipo = DetAnticipo.Id-Anticipo
-                        AND Anticipo.Id-Cliente = 3 NO-LOCK,
+        AND Anticipo.Id-Cliente = 3 NO-LOCK,
         EACH Acuse WHERE Acuse.Id-Acuse = Anticipo.Id-Acuse NO-LOCK,
         EACH b-MovCliente WHERE b-MovCliente.RefSaldo = DetAnticipo.Documento
-                            AND b-MovCliente.Id-Mc = DetAnticipo.Id-MC
-                            AND b-MovCliente.Id-Cliente = Cliente.Id-Cliente 
-                          NO-LOCK BREAK BY Acuse.Id-Acuse:
+        AND b-MovCliente.Id-Mc = DetAnticipo.Id-MC
+        AND b-MovCliente.Id-Cliente = Cliente.Id-Cliente 
+        NO-LOCK BREAK BY Acuse.Id-Acuse:
                               
         IF FIRST-OF(Acuse.Id-Acuse) THEN 
             l-SumaDoc = 0.
               
         l-SumaDoc = l-SumaDoc + DetAnticipo.Importe.
         
-        IF LAST-OF(Acuse.Id-Acuse) THEN DO:
+        IF LAST-OF(Acuse.Id-Acuse) THEN 
+        DO:
             IF l-SumaDoc > 0 AND (l-fecdep = ? OR Acuse.fecdep > l-fecdep) THEN 
-                ASSIGN l-Acuse = Acuse.Id-Acuse
-                       l-fecdep = Acuse.fecdep
-                       l-ImpPago = l-SumaDoc.
+                ASSIGN l-Acuse   = Acuse.Id-Acuse
+                    l-fecdep  = Acuse.fecdep
+                    l-ImpPago = l-SumaDoc.
         END.
     END.
 
     FOR EACH DetAnticipo WHERE (DetAnticipo.FecReg >= l-fecdep OR l-fecdep = ?) NO-LOCK,
         EACH Anticipo WHERE Anticipo.Id-Anticipo = DetAnticipo.Id-Anticipo
-                        AND Anticipo.Id-Cliente = 3 NO-LOCK,
+        AND Anticipo.Id-Cliente = 3 NO-LOCK,
         EACH Acuse WHERE Acuse.Id-Acuse = Anticipo.Id-Acuse NO-LOCK,
         EACH b-HistMovCte WHERE b-HistMovCte.RefSaldo = DetAnticipo.Documento
-                            AND b-HistMovCte.Id-Mc = DetAnticipo.Id-MC
-                            AND b-HistMovCte.Id-Cliente = Cliente.Id-Cliente 
-                            NO-LOCK BREAK BY Acuse.Id-Acuse:
+        AND b-HistMovCte.Id-Mc = DetAnticipo.Id-MC
+        AND b-HistMovCte.Id-Cliente = Cliente.Id-Cliente 
+        NO-LOCK BREAK BY Acuse.Id-Acuse:
         IF FIRST-OF(Acuse.Id-Acuse) THEN 
-              l-SumaDoc = 0.
+            l-SumaDoc = 0.
         l-SumaDoc = l-SumaDoc + DetAnticipo.Importe.
-        IF LAST-OF(Acuse.Id-Acuse) THEN DO:
-          IF l-SumaDoc > 0 AND (l-fecdep = ? OR Acuse.fecdep > l-fecdep) THEN 
-             ASSIGN l-Acuse = Acuse.Id-Acuse
-                    l-fecdep = Acuse.fecdep
+        IF LAST-OF(Acuse.Id-Acuse) THEN 
+        DO:
+            IF l-SumaDoc > 0 AND (l-fecdep = ? OR Acuse.fecdep > l-fecdep) THEN 
+                ASSIGN l-Acuse   = Acuse.Id-Acuse
+                    l-fecdep  = Acuse.fecdep
                     l-ImpPago = l-SumaDoc.
         END.
          
     END.
     
     FIND CURRENT ttPorAut EXCLUSIVE-LOCK NO-ERROR NO-WAIT.
-    ASSIGN vTotChDep = 0
-           vTotFac = 0
-           vEfevo = 0
-           vChNoDep = 0
-           vTotPed = 0.
+    ASSIGN 
+        vTotChDep = 0
+        vTotFac   = 0
+        vEfevo    = 0
+        vChNoDep  = 0
+        vTotPed   = 0.
            
     FOR EACH Acuse WHERE Acuse.Id-Cliente = ttPorAut.IdCliente
-                     AND Acuse.FecDep >= (TODAY - 30)
-                     AND Acuse.FecDep <= TODAY
-                     AND Acuse.Estatus = 4 NO-LOCK:
-        ASSIGN l-Importe = 0.
+        AND Acuse.FecDep >= (TODAY - 30)
+        AND Acuse.FecDep <= TODAY
+        AND Acuse.Estatus = 4 NO-LOCK:
+        ASSIGN 
+            l-Importe = 0.
         FOR EACH PagoAcuse OF Acuse NO-LOCK:
-            ASSIGN l-Importe = l-Importe + pagoAcuse.Importe.
+            ASSIGN 
+                l-Importe = l-Importe + pagoAcuse.Importe.
         END.
-        ASSIGN vTotChDep = vTotChDep + l-Importe.
+        ASSIGN 
+            vTotChDep = vTotChDep + l-Importe.
     END.
     
     FOR EACH DetAnticipo WHERE DetAnticipo.FecReg >= (TODAY - 30) NO-LOCK,
         EACH Anticipo WHERE Anticipo.Id-Anticipo = DetAnticipo.Id-Anticipo
-                        AND Anticipo.Id-Cliente = 3 NO-LOCK,
+        AND Anticipo.Id-Cliente = 3 NO-LOCK,
         EACH b-MovCliente WHERE b-MovCliente.RefSaldo = DetAnticipo.Documento
-                            AND b-MovCliente.Id-Mc = DetAnticipo.Id-MC
-                            AND b-MovCliente.Id-Cliente = Cliente.Id-Cliente 
-                            NO-LOCK:
-        ASSIGN vTotChDep = vTotChDep + DetAnticipo.Importe.
+        AND b-MovCliente.Id-Mc = DetAnticipo.Id-MC
+        AND b-MovCliente.Id-Cliente = Cliente.Id-Cliente 
+        NO-LOCK:
+        ASSIGN 
+            vTotChDep = vTotChDep + DetAnticipo.Importe.
     END. 
     
     FOR EACH Acuse WHERE Acuse.Id-Cliente = ttPorAut.IdCliente
-                     AND Acuse.Estatus < 3 NO-LOCK:
-        ASSIGN l-Importe = 0.
+        AND Acuse.Estatus < 3 NO-LOCK:
+        ASSIGN 
+            l-Importe = 0.
         FOR EACH PagoAcuse OF Acuse NO-LOCK:
-            ASSIGN l-Importe = l-Importe + pagoAcuse.Importe.
+            ASSIGN 
+                l-Importe = l-Importe + pagoAcuse.Importe.
         END.
-        ASSIGN vChNoDep = vChNoDep + l-Importe.
+        ASSIGN 
+            vChNoDep = vChNoDep + l-Importe.
     END.
     FOR EACH CheDev WHERE CheDev.Id-Cliente = ttPorAut.IdCliente
-                      AND CheDev.FecCargo >= (TODAY - 30)
-                      AND CheDev.FecCargo <= TODAY
-                      AND CheDev.FecCanc = ? NO-LOCK BY CheDev.FecCargo:
-        ASSIGN vTotChDep = vTotChDep - CheDev.ImpCheque.
+        AND CheDev.FecCargo >= (TODAY - 30)
+        AND CheDev.FecCargo <= TODAY
+        AND CheDev.FecCanc = ? NO-LOCK BY CheDev.FecCargo:
+        ASSIGN 
+            vTotChDep = vTotChDep - CheDev.ImpCheque.
     END.
     FOR EACH Factura WHERE Factura.Id-Cliente = ttPorAut.IdCliente
-                       AND Factura.FecReg >= (TODAY - 30)
-                       AND Factura.FecReg <= TODAY
-                       AND Factura.FecCanc = ? NO-LOCK:
-        ASSIGN vTotFac = vTotFac + Factura.Tot.
+        AND Factura.FecReg >= (TODAY - 30)
+        AND Factura.FecReg <= TODAY
+        AND Factura.FecCanc = ? NO-LOCK:
+        ASSIGN 
+            vTotFac = vTotFac + Factura.Tot.
     END.
     
     FOR EACH estpedido WHERE estpedido.Id-Cliente = ttPorAut.IdCliente
-                         AND estpedido.estatus < 5 NO-LOCK,
+        AND estpedido.estatus < 5 NO-LOCK,
         EACH Detpedido WHERE detpedido.Id-pedido = estpedido.Id-pedido
-                         AND detpedido.resto = estpedido.Id-seq NO-LOCK:
+        AND detpedido.resto = estpedido.Id-seq NO-LOCK:
         ACCUMULATE vTotPed = vTotPed + DetPedido.Importe + DetPedido.Iva.
     END.
     
-    ASSIGN vEfevo = (vTotFac + vTotPed) - vTotChDep.
+    ASSIGN 
+        vEfevo = (vTotFac + vTotPed) - vTotChDep.
     
     ASSIGN 
-       vSaldoV30 = 0
-       vSaldoV40 = 0
-       vSaldoVenc = 0
-       vSaldo = 0.
+        vSaldoV30  = 0
+        vSaldoV40  = 0
+        vSaldoVenc = 0
+        vSaldo     = 0.
        
     FOR EACH MovCliente WHERE MovCliente.id-cliente = Cliente.Id-Cliente
-                          AND movcliente.id-mc <= 3 NO-LOCK:
-        IF MovCliente.FecVenc < TODAY THEN DO:
-            ASSIGN vSaldoVenc = vSaldovenc + movcliente.saldo.
+        AND movcliente.id-mc <= 3 NO-LOCK:
+        IF MovCliente.FecVenc < TODAY THEN 
+        DO:
+            ASSIGN 
+                vSaldoVenc = vSaldovenc + movcliente.saldo.
             IF movcliente.fecvenc < (TODAY - 30) THEN            
                 ASSIGN vSaldov30 = vSaldov30 + movcliente.saldo.
         END.
         IF movcliente.importe = movcliente.saldo AND
-           TODAY - movcliente.fecreg > 40 THEN            
+            TODAY - movcliente.fecreg > 40 THEN            
             ASSIGN vSaldov40 = vSaldov40 + movcliente.saldo.
-        ASSIGN vSaldo = vSaldo + movcliente.saldo.
+        ASSIGN 
+            vSaldo = vSaldo + movcliente.saldo.
     END. /* del for each movcliente */
     
     ASSIGN
-         v-asunto    = "AUTORIZACION FACTURAS(cxcd1613-M)"             
-         v-contenido = "<html><head>" + CHR(13) +
+        v-asunto    = "AUTORIZACION FACTURAS(cxcd1613-M)"             
+        v-contenido = "<html><head>" + CHR(13) +
                        "<p class=MsoNormal align=center style='text-align:left'><span" + CHR(13) +
                        "style='font-size:10.0pt;font-family:Verdana'>" + 'Se realizo una autorizacion de ' + ttPorAut.TipoDocto + ', por ' + usuario.nom-usuario + '.' + "<o:p></o:p></span></p>" + CHR(13) +
                        "<p class=MsoNormal align=center style='text-align:left'><span" + CHR(13) + "style='font-size:10.0pt;font-family:Verdana'>" + 'Fecha y hora.....:   ' + STRING(TODAY,"99/99/9999") + ' ' + STRING(TIME,"hh:mm:ss")  + CHR(13) + "<o:p></o:p></span></p>" + CHR(13) +     
@@ -348,12 +392,13 @@ IF ipAutoriza = TRUE THEN DO:
                        "</head>".             
                    
                    
-       IF {sist0001.i} = "DESARROLLO" THEN 
-                ASSIGN v-Para = "desarrollo10@adosa.com.mx".
-            ELSE DO:
-                v-Para = (IF ttPorAut.Importe >= 5000 AND vEfevo >= 3000 THEN 'agomez@adosa.com.mx; ogomez@adosa.com.mx; ' ELSE '') +
-                         'dgarza@adosa.com.mx; jgonzalez@adosa.com.mx'.
-            END.             
+    IF {sist0001.i} = "DESARROLLO" THEN 
+        ASSIGN v-Para = "desarrollo10@adosa.com.mx".
+    ELSE 
+    DO:
+        v-Para = (IF ttPorAut.Importe >= 5000 AND vEfevo >= 3000 THEN 'agomez@adosa.com.mx; ogomez@adosa.com.mx; ' ELSE '') +
+            'dgarza@adosa.com.mx; jgonzalez@adosa.com.mx'.
+    END.             
                    
                    
     {inva0007.i 
@@ -365,6 +410,4 @@ IF ipAutoriza = TRUE THEN DO:
         &Attachment = ""  
     }      
                       
-END.   
-
-RETURN.
+END.      

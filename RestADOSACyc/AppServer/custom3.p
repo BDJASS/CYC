@@ -42,6 +42,10 @@
  Ticket 1212  Agregar el Filtro Cobrador
  JASS14072025
  
+ TICKET 76  Integrar una columna con los Importes
+            De los depositos santander (creditos) de los
+            clientes que esten en el Reporte.
+            JASS22082025
   */
 
 /* ***************************  Definitions  ************************** */
@@ -202,7 +206,8 @@ DEF TEMP-TABLE ttAnalisis NO-UNDO
     FIELD MontoPag       AS DECIMAL
     FIELD DiasCartera    AS INTEGER  
     FIELD PromedioPago   AS DEC       FORMAT "-zzz,zzz,zz9.99"
-    FIELD MargenPromedio AS DEC. /* JASS0407202 */ 
+    FIELD MargenPromedio  AS DEC /* JASS0407202 */ 
+    FIELD ImporteDeposito AS DEC. /* JASS22082025 */
  
 
  
@@ -228,6 +233,7 @@ DEFINE NEW SHARED VARIABLE g-tty AS CHARACTER NO-UNDO.
 ASSIGN 
     g-tty = STRING(TIME).
 
+DEFINE VARIABLE vTotal  AS DECIMAL NO-UNDO.  /* JASS22082025 */
 
 @openapi.openedge.export(type="REST", useReturnValue="false", writeDataSetBeforeImage="false").
 PROCEDURE ReporteAnalisisSaldos:
@@ -909,11 +915,13 @@ PROCEDURE ReporteAnalisisSaldos:
         ttDatos.TotalCteDC     = ROUND((l-tsalxant2 / l-tsaltotal2),1)
         ttDatos.TotalCteDPP    = ROUND((l-timpxant2 / l-timptotal2),1).
     
-    FOR EACH ttAnalisis :        
+    FOR EACH ttAnalisis WHERE  ttAnalisis.ClienteId > 0 :        
         RUN programas/margencte.p(INPUT ttAnalisis.ClienteId, OUTPUT v-margen).
+        RUN DepositoSantander(INPUT ttAnalisis.ClienteId, OUTPUT vTotal).
         ASSIGN 
-            ttAnalisis.MargenPromedio = ROUND(v-margen, 2).
-    END.  
+            ttAnalisis.MargenPromedio = ROUND(v-margen, 2)
+            ttAnalisis.ImporteDeposito = vTotal.
+    END.                   
 /*        
 FOR EACH ttAnalisis Where ttAnalisis.Noventa = 0 :
     Delete ttAnalisis.
@@ -1114,4 +1122,35 @@ PROCEDURE "cxcd0010.p":
 
 
 END PROCEDURE.
-    
+ 
+PROCEDURE DepositoSantander:
+/* =========================================================================
+    File : sumaDepBanco.p
+    Purpose : Regresa la suma de importes de los depósitos por cliente
+    Author : Angel & ChatGPT
+   ========================================================================= */
+
+DEFINE INPUT  PARAMETER ipIdCliente AS INTEGER NO-UNDO.
+DEFINE OUTPUT PARAMETER opTotal     AS DECIMAL NO-UNDO.
+
+DEFINE VARIABLE dSuma   AS DECIMAL NO-UNDO INITIAL 0.
+
+/* -----------------------------------------------------------
+   Busca los depósitos válidos de un cliente en los últimos 90 días
+   ----------------------------------------------------------- */
+FOR EACH DepBanco
+    WHERE DepBanco.Id-Cliente = ipIdCliente
+      AND DepBanco.FecDep     >= TODAY - 90
+      AND DepBanco.Conciliado = FALSE
+      AND DepBanco.Activo     = TRUE
+      AND DepBanco.Tipo       <> 4
+    NO-LOCK:
+
+    dSuma   = dSuma + DepBanco.Importe.
+END.   
+
+/* Retorna los resultados */
+opTotal  = dSuma.
+
+END PROCEDURE.
+   

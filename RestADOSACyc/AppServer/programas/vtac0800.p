@@ -473,7 +473,7 @@ ASSIGN l-RutaHTML = "/usr3/tmp/" + l-NombreArchivo.
 
 /* Guardar HTML */
 OUTPUT TO VALUE(l-RutaHTML).
-PUT UNFORMATTED STRING(l-Contenido2). 
+PUT UNFORMATTED STRING(l-Contenido2).   
 OUTPUT CLOSE.
 
 /* Dar permisos */

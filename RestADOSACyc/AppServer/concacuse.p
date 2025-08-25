@@ -4,7 +4,7 @@
   Funcion  : POST para conciliacion de cobranza (generacion de acuses)
   Autor    : FLC
   Fecha    : 7 DIC 2024
-*/
+*/   
 
 DEF TEMP-TABLE ttDocto                      
     FIELD IdUser      AS CHAR

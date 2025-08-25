@@ -140,10 +140,6 @@
       <prgs:param name="Clase" type="QUERY"/>
       <prgs:param name="Nivel" type="QUERY"/>
     </prgs:operation>
-    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PostAutorizador" produces="application/json" verb="POST">
-      <prgs:param name="Autoriza" type="QUERY"/>
-      <prgs:param name="User" type="QUERY"/>
-    </prgs:operation>
     <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PutAutorizarPedido" produces="application/json" verb="PUT">
       <prgs:param name="Pedido" type="QUERY"/>
       <prgs:param name="Segunda" type="QUERY"/>
@@ -154,6 +150,10 @@
     <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..RechazaPedido" produces="application/json" verb="DELETE">
       <prgs:param name="Pedido" type="QUERY"/>
       <prgs:param name="Usuario" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PostAutorizador" produces="application/json" verb="POST">
+      <prgs:param name="Autoriza" type="QUERY"/>
+      <prgs:param name="User" type="QUERY"/>
     </prgs:operation>
   </prgs:resource>
   <prgs:resource consumes="application/json" name="_FiltrarClientes" path="/FiltrarClientes" produces="application/json">

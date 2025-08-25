@@ -121,25 +121,26 @@ DEFINE TEMP-TABLE ttCliente NO-UNDO
     INDEX idx-clase IdCliente ASCENDING.
 
 DEFINE TEMP-TABLE ttDetalle NO-UNDO 
-    FIELD IdCliente    LIKE MovCliente.Id-Cliente
-    FIELD Documento    LIKE MovCliente.RefSaldo
-    FIELD Fecha        LIKE MovCliente.FecReg
-    FIELD PlazoFactura AS INT 
-    FIELD Descripcion  AS CHAR
-    FIELD Cargo        AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD Credito      AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD Saldo        LIKE MovCliente.Saldo
-    FIELD Antiguedad   AS INT
-    FIELD Referencia   AS CHAR
-    FIELD NotaCredito  AS LOGICAL     /* JASS09062025 */
-    FIELD TipoAcuse    LIKE Acuse.Tipo   
-    FIELD FolioEstatus LIKE Factura.CteEstatus
-    FIELD Acuse        LIKE Acuse.Id-Acuse
-    FIELD Registro     LIKE MovCliente.FecReg
-    FIELD Margen       AS DECIMAL FORMAT "-zzz9.99%"      
-    FIELD Acomodo      AS INTE 
-    FIELD Rec          AS RECID    
-    FIELD Id-MC        LIKE MovCliente.Id-MC
+    FIELD IdCliente        LIKE MovCliente.Id-Cliente
+    FIELD Documento        LIKE MovCliente.RefSaldo
+    FIELD Fecha            LIKE MovCliente.FecReg
+    FIELD PlazoFactura     AS INT 
+    FIELD Descripcion      AS CHAR
+    FIELD Cargo            AS DECIMAL FORMAT ">>>,>>>,>>9.99"
+    FIELD Credito          AS DECIMAL FORMAT ">>>,>>>,>>9.99"
+    FIELD Saldo            LIKE MovCliente.Saldo
+    FIELD Antiguedad       AS INT
+    FIELD Referencia       AS CHAR
+    FIELD NotaCredito      AS LOGICAL     /* JASS09062025 */
+    FIELD TipoAcuse        LIKE Acuse.Tipo   
+    FIELD FolioEstatus     LIKE Factura.CteEstatus
+    FIELD Acuse            LIKE Acuse.Id-Acuse
+    FIELD Registro         LIKE MovCliente.FecReg
+    FIELD Margen           AS DECIMAL FORMAT "-zzz9.99%"      
+    FIELD Acomodo          AS INTE 
+    FIELD Rec              AS RECID    
+    FIELD Id-MC            LIKE MovCliente.Id-MC
+    FIELD FacAutorizadoPor LIKE Factura.autorizado-por
     INDEX Idx-Acomodo Acomodo .
     
 DEFINE TEMP-TABLE ttCartera NO-UNDO
@@ -169,19 +170,20 @@ DEFINE DATASET dsMov FOR
 
 
 DEF    BUFFER b-mov      FOR MovCliente.
+DEF    BUFFER bf-mov     FOR MovCliente.
 DEFINE BUFFER bCambioCte FOR CambioCte.
 
 DEF    BUFFER bk-saldo   FOR ttDetalle.
 DEF    BUFFER bbk-saldo  FOR ttDetalle.
-DEF    VAR      l-fecha   AS DATE    NO-UNDO.
-DEFINE VARIABLE v-marneto AS DECIMAL NO-UNDO FORMAT "-zzz9.99%".
-DEFINE VARIABLE v-margen  AS DECIMAL NO-UNDO FORMAT "-zzz9.99%".
+DEF    VAR      l-fecha     AS DATE      NO-UNDO.
+DEFINE VARIABLE v-marneto   AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
+DEFINE VARIABLE v-margen    AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
 
-DEF    VAR      l-digver  AS CHAR .
-DEF    VAR      l-CteDig  AS INTEGER NO-UNDO.
+DEF    VAR      l-digver    AS CHAR .
+DEF    VAR      l-CteDig    AS INTEGER   NO-UNDO.
 
-DEF    VAR      l-RefValor2     AS CHARACTER NO-UNDO.
-DEF    VAR      l-RefValor3     AS CHARACTER NO-UNDO.
+DEF    VAR      l-RefValor2 AS CHARACTER NO-UNDO.
+DEF    VAR      l-RefValor3 AS CHARACTER NO-UNDO.
 
 /* **********************  Internal Procedures  *********************** */
 
@@ -204,7 +206,7 @@ PROCEDURE GetCartera:
     EMPTY TEMP-TABLE ttCartera.
     /* Log de inicio del recurso */
     LOG-MANAGER:WRITE-MESSAGE("/MovimientoCliente [GET] >>> Iniciando consulta de movimientos | Cliente: "
-                           + STRING(lCliente) + " | FechaHora: " + STRING(NOW)).   
+        + STRING(lCliente) + " | FechaHora: " + STRING(NOW)).   
     FIND FIRST Cliente WHERE Cliente.Id-Cliente = lCliente NO-LOCK NO-ERROR.
     IF NOT AVAILABLE Cliente OR lCliente = 0 THEN
     DO:
@@ -304,7 +306,6 @@ PROCEDURE GetCartera:
     END.  
     
     /**************************************************************************************************** */
-     
     FOR EACH b-mov WHERE b-mov.Id-Cliente = lCliente  AND
         b-mov.FecReg    <= TODAY AND
         b-mov.Id-MC     <= 3 AND
@@ -312,31 +313,33 @@ PROCEDURE GetCartera:
         BREAK BY b-mov.FecReg
         BY b-mov.RefSaldo
         BY b-mov.Id-MC:
+    
         IF b-mov.Id-MC <= 3 THEN 
         DO:
-            FOR EACH MovCliente WHERE MovCliente.RefSaldo = b-mov.RefSaldo  AND
-                MovCliente.FecReg  <= TODAY      AND
-                MovCliente.Id-MC    > 3               AND
-                MovCliente.Afectado NO-LOCK:
-                ACCUMULATE MovCliente.Importe (TOTAL).
+            FOR EACH bf-mov WHERE bf-mov.RefSaldo = b-mov.RefSaldo  AND
+                bf-mov.FecReg  <= TODAY      AND
+                bf-mov.Id-MC    > 3               AND
+                bf-mov.Afectado NO-LOCK:
+                ACCUMULATE bf-mov.Importe (TOTAL).
             END.
             ASSIGN 
-                l-saldo = b-mov.Importe + ACCUM TOTAL MovCliente.Importe.
+                l-saldo = b-mov.Importe + ACCUM TOTAL bf-mov.Importe.
         
         END. /* del MovCliente.Id-MC <= 3 */
         FOR EACH MovCliente WHERE MovCliente.RefSaldo = b-Mov.refsaldo AND
             MovCliente.FecReg  <= TODAY     AND
             MovCliente.Afectado NO-LOCK
-            BREAK BY MovCliente.REfSaldo
+            BREAK BY MovCliente.REfSaldo   
             BY MovCliente.Id-MC:
+                   
             FIND TabMC OF MovCliente NO-LOCK NO-ERROR.
+            
             FIND Cliente WHERE Cliente.Id-Cliente = MovCliente.Id-Cliente
                 NO-LOCK NO-ERROR.
             IF MovCliente.Id-Mc <> 65 THEN
                 FIND Acuse WHERE Acuse.Id-Acuse = MovCliente.Documento NO-LOCK NO-ERROR.
             ELSE RELEASE Acuse.
 
-        
             IF FIRST-OF(MovCliente.RefSaldo) THEN 
             DO:
                 ASSIGN 
@@ -359,8 +362,8 @@ PROCEDURE GetCartera:
                     l-totcargoME   = l-totcargoME + (l-cargo)
                     l-totcreditoME = l-totcreditoME + (l-credito)  .
                     
-                 FIND FIRST Moneda WHERE Moneda.Id-Moneda = MovCliente.Id-Moneda NO-LOCK NO-ERROR.
-                    IF AVAILABLE Moneda THEN ASSIGN l-RefValor2 = Moneda.Simbolo.   
+                FIND FIRST Moneda WHERE Moneda.Id-Moneda = MovCliente.Id-Moneda NO-LOCK NO-ERROR.
+                IF AVAILABLE Moneda THEN ASSIGN l-RefValor2 = Moneda.Simbolo.   
                 /*
                 IF MovCliente.FecVenc >= TODAY AND MovCliente.Id-MC <= 3 THEN
                     ASSIGN l-pvencerME = l-pvencerME + l-saldo.
@@ -409,7 +412,7 @@ PROCEDURE GetCartera:
                     l-totcredito = l-totcredito + l-credito.
                 
                 FIND FIRST Moneda WHERE Moneda.Id-Moneda = MovCliente.Id-Moneda NO-LOCK NO-ERROR.
-                    IF AVAILABLE Moneda THEN ASSIGN l-RefValor3 = Moneda.Simbolo. 
+                IF AVAILABLE Moneda THEN ASSIGN l-RefValor3 = Moneda.Simbolo. 
                     
                 IF MovCliente.FecVenc >= TODAY AND MovCliente.Id-MC <= 3 THEN
                     ASSIGN l-pvencer = l-pvencer + l-saldo.
@@ -456,14 +459,11 @@ PROCEDURE GetCartera:
                     IF AVAILABLE Moneda THEN ASSIGN l-RefValor = Moneda.Simbolo.
                 END.
                 ELSE ASSIGN l-RefValor = "". 
-            END.  
-          
-
-            /*IF USERID("dictdb") = "franc" THEN
-               MESSAGE "3" VIEW-AS ALERT-BOX.*/
+            END.    
+              
         
             FIND TabMC OF MovCliente NO-LOCK NO-ERROR.
-            CREATE ttDetalle.
+            CREATE ttDetalle.  
             ASSIGN 
                 ttDetalle.IdCliente   = MovCliente.Id-Cliente
                 ttDetalle.Documento   = MovCliente.RefSaldo
@@ -475,14 +475,14 @@ PROCEDURE GetCartera:
                 WHEN MovCliente.Importe <= 0
                 ttDetalle.Saldo       = 0.01
                 ttDetalle.Margen      = ?
-                ttDetalle.id-mc       = movcliente.id-mc
+                ttDetalle.id-mc       = IF AVAILABLE MovCliente THEN MovCliente.Id-MC ELSE 0  // . movcliente.id-mc
                 ttDetalle.Antiguedad  = TODAY - l-fecha 
-                ttDetalle.Referencia  = IF MovCliente.Id-NCR <> "" THEN
+                ttDetalle.Referencia  = IF MovCliente.Id-NCR <> "" THEN  
                                  MovCliente.Id-NCR ELSE (MovCliente.Documento + 
                                 (IF AVAILABLE Acuse AND Acuse.Estatus <> 4 THEN "&" ELSE '')) 
                 ttDetalle.Rec         = RECID(TabMC)    
                 ttDetalle.NotaCredito = TRIM(MovCliente.Id-NCR) <> "" .   
-               
+             
             /* Buscar Acuse con base en la referencia que acabamos de construir */
             FIND FIRST Acuse 
                 WHERE Acuse.Id-Acuse = ttDetalle.Referencia
@@ -494,20 +494,20 @@ PROCEDURE GetCartera:
             ELSE
                 ttDetalle.TipoAcuse = "".      
                 
-
             FIND Factura WHERE Factura.Id-Factura = MovCliente.RefSaldo NO-LOCK NO-ERROR.
             IF AVAILABLE Factura THEN 
             DO:
                 IF MovCliente.Id-MC = 1 THEN 
                 DO:
                     ASSIGN 
-                        ttDetalle.PlazoFactura = Factura.Plazo
-                        ttDetalle.Referencia   = Factura.Id-Fiscal.
+                        ttDetalle.PlazoFactura     = Factura.Plazo
+                        ttDetalle.Referencia       = Factura.Id-Fiscal   
+                        ttDetalle.FacAutorizadoPor = Factura.autorizado-por.   
                 END.
                 ELSE
-                    ASSIGN ttDetalle.PlazoFactura = (MovCliente.FecReg - Factura.FecReg).
+                   ASSIGN ttDetalle.PlazoFactura = (MovCliente.FecReg - Factura.FecReg).
             END.
-    
+            
             IF MovCliente.Id-MC = 1 THEN 
             DO:
                 FOR EACH Devolucion WHERE Devolucion.Id-Factura = MovCliente.RefSaldo AND
@@ -545,19 +545,16 @@ PROCEDURE GetCartera:
                 ACCUMULATE l-saldo * l-ant (TOTAL).
             END.
             /*_ RNPC - Suma los totales de cr�dito y cargo al terminar de barrer los registros _*/
-            IF LAST(b-mov.fecreg) AND LAST(MovCliente.REfSaldo) THEN 
+            IF LAST(b-mov.fecreg) /* AND LAST(MovCliente.REfSaldo) */   THEN 
             DO:
                 ASSIGN 
                     l-saldo   = l-totcargo + l-totcredito
                     l-saldoME = l-totcargoME + l-totcreditoME.
             END.
             ASSIGN 
-                l-linea2 = l-linea2 + 1.
-     
-     
-       
+                l-linea2 = l-linea2 + 1.       
+          
         END. /* DEL for each MovCliente */
-   
     END. /* del for each a b-mov*/
     FOR EACH ttDetalle :
         FIND RefPortal WHERE RefPortal.Id-Cliente = ttDetalle.IdCliente 
@@ -569,7 +566,7 @@ PROCEDURE GetCartera:
            
             ttDetalle.Registro     = (IF AVAILABLE RefPortal THEN RefPortal.FecReg ELSE ?).   
            
-    END. 
+    END.   
     
     CREATE ttCartera.
     ASSIGN
@@ -713,12 +710,11 @@ PROCEDURE GetCartera:
     */
     
     /* Si una factura ya esta pagada debe mostrar el margen NETO */ 
-    DEFINE BUFFER bfFact FOR ttDetalle.
+    DEFINE BUFFER bfFact  FOR ttDetalle.
     DEFINE BUFFER bf-Fact FOR ttDetalle.
     FOR EACH ttDetalle WHERE ttDetalle.Saldo = 0.0:
 
         DO TRANSACTION:
-           // RUN calcularMargenNeto(INPUT ttDetalle.Documento, OUTPUT v-marneto).
             RUN GetMargenFactura(INPUT ttDetalle.Documento, OUTPUT v-margen,OUTPUT v-marneto).
         END.
 
@@ -733,9 +729,8 @@ PROCEDURE GetCartera:
     END. 
     FOR EACH ttDetalle WHERE ttDetalle.Saldo > 0.0:
 
-        DO TRANSACTION:
-           // RUN calcularMargenNeto(INPUT ttDetalle.Documento, OUTPUT v-marneto).
-            RUN GetMargenFactura(INPUT ttDetalle.Documento, OUTPUT v-margen,OUTPUT v-marneto).
+        DO TRANSACTION:   
+          RUN GetMargenFactura(INPUT ttDetalle.Documento, OUTPUT v-margen,OUTPUT v-marneto).
         END.
 
         FIND FIRST bf-Fact WHERE 
@@ -747,15 +742,15 @@ PROCEDURE GetCartera:
             ASSIGN bf-Fact.Margen = v-margen.
 
     END.   
-/*
-FOR EACH ttDetalle WHERE ttDetalle.Descripcion BEGINS "Fact":
-    DO TRANSACTION:                                                                             
-        RUN calcularMargenNeto(INPUT ttDetalle.Documento,OUTPUT  v-marneto).
-    END.
-    ASSIGN  
-        ttDetalle.Margen = v-marneto. 
-END. */
-RETURN.           
+    /*
+    FOR EACH ttDetalle WHERE ttDetalle.Descripcion BEGINS "Fact":
+        DO TRANSACTION:                                                                             
+            RUN calcularMargenNeto(INPUT ttDetalle.Documento,OUTPUT  v-marneto).
+        END.
+        ASSIGN  
+            ttDetalle.Margen = v-marneto. 
+    END. */
+    RETURN.              
 END PROCEDURE.    
 
 
@@ -923,7 +918,7 @@ PROCEDURE GetMargenFactura:
         END.
 
         FOR EACH HistMovCte WHERE HistMovCte.RefSaldo = lFactura NO-LOCK:
-            CASE MovCliente.Id-MC:
+            CASE HistMovCte.Id-MC:
                 WHEN 57 THEN 
                     lPagos = lPagos + (HistMovCte.Importe * -1).
                 WHEN 58 THEN 
@@ -953,7 +948,7 @@ PROCEDURE GetMargenFactura:
             END CASE.
         END.
     END.
-    ELSE 
+    ELSE     
     DO: /* Buscar en REMISION */
         FIND Remision WHERE Remision.Id-Remision = lFactura NO-LOCK NO-ERROR.
         IF AVAILABLE Remision AND Remision.FecCanc = ? THEN 

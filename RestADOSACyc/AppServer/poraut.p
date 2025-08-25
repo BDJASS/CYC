@@ -164,7 +164,8 @@ ASSIGN vCont = 0.
 EMPTY TEMP-TABLE ttFactura NO-ERROR.
 
 FOR EACH AutPend WHERE NOT CAN-FIND(FIRST Autorizacion WHERE Autorizacion.Id-Cliente = AutPend.Id-Cliente
-                                                         AND Autorizacion.RecTipo = AutPend.RecAuto) NO-LOCK:
+                                                         AND Autorizacion.RecTipo = AutPend.RecAuto
+                                                       /*  AND Autorizacion.FecReg  = TODAY )*/ ) NO-LOCK:
     CREATE ttFactura.
     BUFFER-COPY AutPend EXCEPT RecAuto TO ttFactura.
     ASSIGN ttFactura.RecAuto = AutPend.RecAuto.
@@ -517,7 +518,8 @@ PROCEDURE PostAutorizador:
 DEFINE INPUT PARAMETER ipAutoriza AS LOGICAL NO-UNDO.
 DEFINE INPUT PARAMETER ipUser AS CHARACTER NO-UNDO.
 DEFINE INPUT PARAMETER TABLE FOR ttPorAut. 
-
+DEFINE OUTPUT PARAMETER vRespuesta AS CHARACTER NO-UNDO.
+DEFINE OUTPUT PARAMETER vIdError AS LOGICAL NO-UNDO. 
 /* Log simple   */
 LOG-MANAGER:WRITE-MESSAGE(
     SUBSTITUTE("/PedidoEmpMEs [Post] Autorizacion de Facturas >>> Inicia ejecución | Usuario: &1 | Autoriza: &2 | FechaHora: &3",
@@ -525,9 +527,9 @@ LOG-MANAGER:WRITE-MESSAGE(
                IF ipAutoriza THEN "TRUE" ELSE "FALSE",
                STRING(NOW))
 ).  
-
-RUN programas/facautorizacion.p(INPUT ipAutoriza,INPUT ipUser,INPUT TABLE ttPorAut).  
-RETURN.
+                                                          
+RUN programas/facautorizacion.p(INPUT ipAutoriza,INPUT ipUser,INPUT TABLE ttPorAut,OUTPUT vRespuesta, OUTPUT vIdError).      
+RETURN.                    
 END PROCEDURE.    
 
 @openapi.openedge.export(type="REST", useReturnValue="false", writeDataSetBeforeImage="false").

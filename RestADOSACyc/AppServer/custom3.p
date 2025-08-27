@@ -917,7 +917,7 @@ PROCEDURE ReporteAnalisisSaldos:
     
     FOR EACH ttAnalisis WHERE  ttAnalisis.ClienteId > 0 :        
         RUN programas/margencte.p(INPUT ttAnalisis.ClienteId, OUTPUT v-margen).
-        RUN DepositoSantander(INPUT ttAnalisis.ClienteId, OUTPUT vTotal).
+        RUN DepositoSantander(INPUT ttAnalisis.ClienteId, OUTPUT vTotal). 
         ASSIGN 
             ttAnalisis.MargenPromedio = ROUND(v-margen, 2)
             ttAnalisis.ImporteDeposito = vTotal.
@@ -1140,10 +1140,10 @@ DEFINE VARIABLE dSuma   AS DECIMAL NO-UNDO INITIAL 0.
    ----------------------------------------------------------- */
 FOR EACH DepBanco
     WHERE DepBanco.Id-Cliente = ipIdCliente
-      AND DepBanco.FecDep     >= TODAY - 90
+      AND DepBanco.FecDep     >= TODAY - 5
       AND DepBanco.Conciliado = FALSE
       AND DepBanco.Activo     = TRUE
-      AND DepBanco.Tipo       <> 4
+      AND DepBanco.Tipo       <> 4  
     NO-LOCK:
 
     dSuma   = dSuma + DepBanco.Importe.

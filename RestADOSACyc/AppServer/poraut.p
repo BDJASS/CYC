@@ -247,13 +247,13 @@ FOR EACH ttFactura EXCLUSIVE-LOCK,
         ttPorAut.TipoDocto = ttFactura.Tipo
         ttPorAut.Cond = (IF ttFactura.Tipo = "REMISION" THEN "CONTADO" ELSE "CREDITO")
         ttPorAut.FecReg = TODAY  
-        ttPorAut.HorReg = STRING(TIME, "HH:MM:SS")  
+        ttPorAut.HorReg = STRING(TIME, "HH:MM:SS")            
         ttPorAut.Importe = ttFactura.Importe
         ttPorAut.Plazo = Cliente.Plazo
         ttPorAut.Sucursal = IF AVAILABLE UbiVta THEN UbiVta.Descr ELSE ttFactura.Id-Ubic 
         ttPorAut.NomVendedor = IF AVAILABLE Empleado THEN Empleado.Nombre ELSE ttFactura.Id-Vendedor  
         ttPorAut.NomResponsable = IF AVAILABLE Resp THEN Resp.Nombre ELSE STRING(Cliente.Id-Resp)
-        ttPorAut.RecAuto = ttFactura.RecAuto
+        ttPorAut.RecAuto = ttFactura.RecAuto         
         ttPorAut.SaldoVenc = ttFactura.SaldoVenc
         ttPorAut.Saldo = ttFactura.Saldo
         ttPorAut.IdVendedor = ttFactura.Id-Vendedor

@@ -156,12 +156,22 @@ IF AVAILABLE EstCte THEN DO:
         /* Acumular las ventas del año más antiguo */
         ASSIGN l-todo = l-todo + INT(EstCte.VentasCO[i] + EstCte.VentasCR[i])
                l-acumuladoAnt3[i] = l-todo. /* Guardar acumulado para cada mes */
-
+/*
         /* Calcular crecimiento basado en los acumulados de los años 2 y 3 */
         ASSIGN l-crecimiento[i] = IF l-acumuladoAnt2[i] > 0 THEN
                                  ROUND(((l-ventaccum[i] - l-acumuladoAnt2[i]) / l-acumuladoAnt2[i]) * 100,2)   
                                 ELSE 0. /* Evitar división por cero */
-
+                                
+                                */
+        ASSIGN l-crecimiento[i] =                         
+        IF l-acumuladoAnt2[i] <> 0 THEN
+      (l-ventaccum[ (IF l-Anio < YEAR(TODAY) THEN i
+                     ELSE (IF i < MONTH(TODAY) THEN i
+                           ELSE MONTH(TODAY)))
+                   ] - l-acumuladoAnt2[i]) / (l-acumuladoAnt2[i] / 100)
+   ELSE IF l-ventaccum[i] = 0 THEN 0
+        ELSE 100.
+        
         /* Crear un registro en la tabla temporal con los datos del mes */
         CREATE ttEstadistica.
         ASSIGN ttEstadistica.idCliente = l-Cliente
@@ -177,6 +187,17 @@ END.
  ELSE DO:
         /* Inserta datos en blanco si no hay registros */
         DO i = 1 TO 12:
+            
+             ASSIGN l-crecimiento[i] =                         
+        IF l-acumuladoAnt2[i] <> 0 THEN
+      (l-ventaccum[ (IF l-Anio < YEAR(TODAY) THEN i
+                     ELSE (IF i < MONTH(TODAY) THEN i
+                           ELSE MONTH(TODAY)))
+                   ] - l-acumuladoAnt2[i]) / (l-acumuladoAnt2[i] / 100)
+   ELSE IF l-ventaccum[i] = 0 THEN 0
+        ELSE 100.
+            
+            
             CREATE ttEstadistica.
             ASSIGN ttEstadistica.idCliente = l-Cliente
                    ttEstadistica.RazonSocial = Cliente.RazonSocial WHEN AVAILABLE Cliente
@@ -185,11 +206,11 @@ END.
                    ttEstadistica.ventas = 0
                    ttEstadistica.acumulado = 0
                    ttEstadistica.pagos = 0
-                   ttEstadistica.crecimiento = 0.
+                   ttEstadistica.crecimiento = l-crecimiento[i].
         END.
  END. 
-
-/*  12082025
+/* 
+/*  12082025 */
 FOR EACH ttEstadistica NO-LOCK:
     /* Reemplazar NULL por 0 para los campos ventas y acumulado */
     IF ttEstadistica.ventas = ? THEN

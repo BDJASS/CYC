@@ -52,8 +52,8 @@ ASSIGN adosa.MovCliente.FecReg      = {&FecReg}
        adosa.MovCliente.Id-Cliente  = {&Cliente}
        adosa.MovCliente.Afectado    = {&Afectar}
        adosa.MovCliente.Id-Ubic     = l-Ubic
-       adosa.MovCliente.Id-Moneda   = 1
-       adosa.MovCliente.TipoCambio  = 1.
+       adosa.MovCliente.Id-Moneda   = {&Moneda}
+       adosa.MovCliente.TipoCambio  = {&Cambio}.   
 IF {&TipoPadre} = {&TipoMov} THEN
   ASSIGN adosa.MovCliente.Saldo     = {&Importe}.
 

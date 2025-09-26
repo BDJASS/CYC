@@ -28,7 +28,10 @@
       En Movimientos de clientes cuando tiene Moneda Extranjera
       coloca unos renglones Extras.
       Se enviaran tambien, del lado del front se colocara de forma dinamica.
-      
+  
+ Mod: Ticket 292 - 293 /* JASS11092025 */
+      Integrar Proceso de Depositos Santander
+      Mostrar Promedio,Margen,DiasC incluso sin saldo.    
   --------------------------------------------------------------------- */  
   
 /* ***************************  Definitions  ************************** */
@@ -39,7 +42,7 @@ BLOCK-LEVEL ON ERROR UNDO, THROW.
 
 
 /* ***************************  Main Block  *************************** */
-DEFINE VARIABLE l-num          AS INT.  
+DEFINE VARIABLE l-num          AS INTEGER.  
 DEFINE VARIABLE l-tot-total    AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
 DEFINE VARIABLE l-tot-vig      AS DECIMAL   FORMAT ">>>,>>>,>>9.99". 
 DEFINE VARIABLE l-tot-ven      AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
@@ -48,54 +51,54 @@ DEFINE VARIABLE l-clase        AS CHARACTER FORMAT "X(20)".
 DEFINE VARIABLE l-segmento     AS CHARACTER FORMAT "X(20)".
 DEFINE VARIABLE l-estatus      AS CHARACTER FORMAT "X(15)".
 DEFINE VARIABLE l-moneda       AS CHARACTER FORMAT "X(15)".
-DEFINE VARIABLE l-tipo-moneda  AS INT.
+DEFINE VARIABLE l-tipo-moneda  AS INTEGER.
 DEFINE VARIABLE l-tot-30       AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
 DEFINE VARIABLE l-tot-31       AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
 DEFINE VARIABLE l-tot-61       AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
 DEFINE VARIABLE l-tot-91       AS DECIMAL   FORMAT ">>>,>>>,>>9.99".
-DEFINE VARIABLE l-dia          AS INT.
-DEFINE VARIABLE l-dia-max      AS INT       FORMAT "zz9" NO-UNDO.
+DEFINE VARIABLE l-dia          AS INTEGER.
+DEFINE VARIABLE l-dia-max      AS INTEGER   FORMAT "zz9" NO-UNDO.
 
 
-DEF    VAR      l-cargo        AS DECI      FORMAT ">,>>>,>>9.99" LABEL "Cargo" NO-UNDO.
-DEF    VAR      l-credito      AS DECI      FORMAT ">,>>>,>>9.99" LABEL "Credito" NO-UNDO.
-DEF    VAR      l-totcargo     AS DECI      NO-UNDO.
-DEF    VAR      l-totcredito   AS DECI      NO-UNDO.
-DEF    VAR      l-cargoME      AS DECI      FORMAT ">,>>>,>>9.99" NO-UNDO.
-DEF    VAR      l-creditoME    AS DECI      FORMAT ">,>>>,>>9.99" NO-UNDO.
-DEF    VAR      l-vencidoME    AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08 
-DEF    VAR      l-pvencerME    AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-saldoME      AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-tot30ME      AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-tot60ME      AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-tot90ME      AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-tot91ME      AS DECI      FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-totcargoME   AS DECI      NO-UNDO.
-DEF    VAR      l-totcreditoME AS DECI      NO-UNDO.
-DEF    VAR      l-RefValor     AS CHARACTER NO-UNDO.
-DEF    VAR      l-vencido      AS DECI      FORMAT "-zzzzz9.99" LABEL "Vencido" NO-UNDO.
-DEF    VAR      l-pvencer      AS DECI      FORMAT "-zzzzz9.99" LABEL "P/Vencer" NO-UNDO.
-DEF    VAR      l-saldo        AS DECI      FORMAT "-zzzzz9.99" LABEL "Saldo" NO-UNDO.
-DEF    VAR      l-tot30        AS DECI      FORMAT "-zzzzz9.99" LABEL " 1-30" NO-UNDO.
-DEF    VAR      l-tot60        AS DECI      FORMAT "-zzzzz9.99" LABEL "31-60" NO-UNDO.
-DEF    VAR      l-tot90        AS DECI      FORMAT "-zzzzz9.99" LABEL "61+" NO-UNDO.
-DEF    VAR      l-totMas90     AS DECI      FORMAT "-zzzzz9.99" LABEL "90+" NO-UNDO.
-DEF    VAR      l-chequepag    AS INTE      FORMAT ">9" NO-UNDO.
+DEFINE VARIABLE l-cargo        AS DECIMAL   FORMAT ">,>>>,>>9.99" LABEL "Cargo" NO-UNDO.
+DEFINE VARIABLE l-credito      AS DECIMAL   FORMAT ">,>>>,>>9.99" LABEL "Credito" NO-UNDO.
+DEFINE VARIABLE l-totcargo     AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-totcredito   AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-cargoME      AS DECIMAL   FORMAT ">,>>>,>>9.99" NO-UNDO.
+DEFINE VARIABLE l-creditoME    AS DECIMAL   FORMAT ">,>>>,>>9.99" NO-UNDO.
+DEFINE VARIABLE l-vencidoME    AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08 
+DEFINE VARIABLE l-pvencerME    AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-saldoME      AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-tot30ME      AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-tot60ME      AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-tot90ME      AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-tot91ME      AS DECIMAL   FORMAT "-zzzzz9.99" NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-totcargoME   AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-totcreditoME AS DECIMAL   NO-UNDO.
+DEFINE VARIABLE l-RefValor     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE l-vencido      AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "Vencido" NO-UNDO.
+DEFINE VARIABLE l-pvencer      AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "P/Vencer" NO-UNDO.
+DEFINE VARIABLE l-saldo        AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "Saldo" NO-UNDO.
+DEFINE VARIABLE l-tot30        AS DECIMAL   FORMAT "-zzzzz9.99" LABEL " 1-30" NO-UNDO.
+DEFINE VARIABLE l-tot60        AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "31-60" NO-UNDO.
+DEFINE VARIABLE l-tot90        AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "61+" NO-UNDO.
+DEFINE VARIABLE l-totMas90     AS DECIMAL   FORMAT "-zzzzz9.99" LABEL "90+" NO-UNDO.
+DEFINE VARIABLE l-chequepag    AS INTEGER   FORMAT ">9" NO-UNDO.
 DEFINE VARIABLE l-prompago     AS DECIMAL.
-DEF    VAR      l-pagina       AS INTE      FORMAT "zz9" NO-UNDO.
-DEF    VAR      l-numcheque    AS INTE      FORMAT "z9" NO-UNDO.
-DEF    VAR      l-consecutivo  AS INTE      NO-UNDO.
-DEF    VAR      l-HayMonedaEX  AS LOGICAL   INITIAL FALSE NO-UNDO.   // RNPC - 2019-07-08
-DEF    VAR      l-largo        AS INTE      INITIAL 20 NO-UNDO.
-DEF    VAR      l-tam          AS INTE      NO-UNDO.
-DEF    VAR      l-ctrl         AS INTE      NO-UNDO.
-DEF    VAR      l-cont         AS INTE      NO-UNDO.
-DEF    VAR      l-dias         AS INTE      FORMAT "zz9" NO-UNDO.
-DEF    VAR      l-linea2       AS INTE      INITIAL 0 NO-UNDO.
-DEF    VAR      l-ant          AS INTE      FORMAT "zz9" LABEL "Ant" NO-UNDO.
-DEF    VAR      l-resp         AS LOGI      FORMAT "Si/No" NO-UNDO.
-DEF    VAR      l-hubo         AS LOGI      NO-UNDO.
-DEF    VAR      l-acomodo      AS INTE      NO-UNDO.
+DEFINE VARIABLE l-pagina       AS INTEGER   FORMAT "zz9" NO-UNDO.
+DEFINE VARIABLE l-numcheque    AS INTEGER   FORMAT "z9" NO-UNDO.
+DEFINE VARIABLE l-consecutivo  AS INTEGER   NO-UNDO.
+DEFINE VARIABLE l-HayMonedaEX  AS LOGICAL   INITIAL FALSE NO-UNDO.   // RNPC - 2019-07-08
+DEFINE VARIABLE l-largo        AS INTEGER   INITIAL 20 NO-UNDO.
+DEFINE VARIABLE l-tam          AS INTEGER   NO-UNDO.
+DEFINE VARIABLE l-ctrl         AS INTEGER   NO-UNDO.
+DEFINE VARIABLE l-cont         AS INTEGER   NO-UNDO.
+DEFINE VARIABLE l-dias         AS INTEGER   FORMAT "zz9" NO-UNDO.
+DEFINE VARIABLE l-linea2       AS INTEGER   INITIAL 0 NO-UNDO.
+DEFINE VARIABLE l-ant          AS INTEGER   FORMAT "zz9" LABEL "Ant" NO-UNDO.
+DEFINE VARIABLE l-resp         AS LOGI      FORMAT "Si/No" NO-UNDO.
+DEFINE VARIABLE l-hubo         AS LOGI      NO-UNDO.
+DEFINE VARIABLE l-acomodo      AS INTEGER   NO-UNDO.
 DEFINE TEMP-TABLE ttCliente NO-UNDO    
     FIELD IdCliente    LIKE Cliente.Id-Cliente
     FIELD RazonSocial  LIKE Cliente.RazonSocial
@@ -113,9 +116,9 @@ DEFINE TEMP-TABLE ttCliente NO-UNDO
     FIELD IdCob        LIKE Cliente.Id-Cobrador           
     FIELD Cobrador     AS CHARACTER 
     FIELD CteDig       AS CHARACTER
-    FIELD UsrModLimite AS CHAR
+    FIELD UsrModLimite AS CHARACTER
     FIELD FecModLimite AS DATE
-    FIELD UsrModPlazo  AS CHAR   
+    FIELD UsrModPlazo  AS CHARACTER   
     FIELD FecModPlazo  AS DATE
     FIELD MontoPagare  LIKE Cliente.MontoPagare   
     INDEX idx-clase IdCliente ASCENDING.
@@ -124,20 +127,20 @@ DEFINE TEMP-TABLE ttDetalle NO-UNDO
     FIELD IdCliente        LIKE MovCliente.Id-Cliente
     FIELD Documento        LIKE MovCliente.RefSaldo
     FIELD Fecha            LIKE MovCliente.FecReg
-    FIELD PlazoFactura     AS INT 
-    FIELD Descripcion      AS CHAR
-    FIELD Cargo            AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD Credito          AS DECIMAL FORMAT ">>>,>>>,>>9.99"
+    FIELD PlazoFactura     AS INTEGER 
+    FIELD Descripcion      AS CHARACTER
+    FIELD Cargo            AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD Credito          AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
     FIELD Saldo            LIKE MovCliente.Saldo
-    FIELD Antiguedad       AS INT
-    FIELD Referencia       AS CHAR
+    FIELD Antiguedad       AS INTEGER
+    FIELD Referencia       AS CHARACTER
     FIELD NotaCredito      AS LOGICAL     /* JASS09062025 */
     FIELD TipoAcuse        LIKE Acuse.Tipo   
     FIELD FolioEstatus     LIKE Factura.CteEstatus
     FIELD Acuse            LIKE Acuse.Id-Acuse
     FIELD Registro         LIKE MovCliente.FecReg
-    FIELD Margen           AS DECIMAL FORMAT "-zzz9.99%"      
-    FIELD Acomodo          AS INTE 
+    FIELD Margen           AS DECIMAL   FORMAT "-zzz9.99%"      
+    FIELD Acomodo          AS INTEGER 
     FIELD Rec              AS RECID    
     FIELD Id-MC            LIKE MovCliente.Id-MC
     FIELD FacAutorizadoPor LIKE Factura.autorizado-por
@@ -145,18 +148,19 @@ DEFINE TEMP-TABLE ttDetalle NO-UNDO
     
 DEFINE TEMP-TABLE ttCartera NO-UNDO
     FIELD id             AS INTEGER
-    FIELD Moneda         AS CHAR
+    FIELD Moneda         AS CHARACTER
     FIELD IdCliente      AS INTEGER
-    FIELD saldo          AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD porvencer      AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD montovencido   AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD treinta        AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD sesenta        AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD noventa        AS DECIMAL FORMAT ">>>,>>>,>>9.99"
-    FIELD noventamas     AS DECIMAL FORMAT ">>>,>>>,>>9.99"
+    FIELD saldo          AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD porvencer      AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD montovencido   AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD treinta        AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD sesenta        AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD noventa        AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
+    FIELD noventamas     AS DECIMAL   FORMAT ">>>,>>>,>>9.99"
     FIELD diacartera     AS INTEGER
     FIELD promedio       AS DECIMAL  
     FIELD margenpromedio AS DECIMAL
+    FIELD deposito       AS DECIMAL 
     INDEX idx-clase IdCliente ASCENDING.
 /* Definir el DATASET con relaciones */ 
 DEFINE DATASET dsMov FOR 
@@ -169,21 +173,24 @@ DEFINE DATASET dsMov FOR
     RELATION-FIELDS (IdCliente, IdCliente). /* Relación por IdCliente */
 
 
-DEF    BUFFER b-mov      FOR MovCliente.
-DEF    BUFFER bf-mov     FOR MovCliente.
+DEFINE BUFFER b-mov      FOR MovCliente.
+DEFINE BUFFER bf-mov     FOR MovCliente.
 DEFINE BUFFER bCambioCte FOR CambioCte.
 
-DEF    BUFFER bk-saldo   FOR ttDetalle.
-DEF    BUFFER bbk-saldo  FOR ttDetalle.
-DEF    VAR      l-fecha     AS DATE      NO-UNDO.
-DEFINE VARIABLE v-marneto   AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
-DEFINE VARIABLE v-margen    AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
+DEFINE BUFFER bk-saldo   FOR ttDetalle.
+DEFINE BUFFER bbk-saldo  FOR ttDetalle.
+DEFINE VARIABLE l-fecha         AS DATE      NO-UNDO.
+DEFINE VARIABLE v-marneto       AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
+DEFINE VARIABLE v-margen        AS DECIMAL   NO-UNDO FORMAT "-zzz9.99%".
 
-DEF    VAR      l-digver    AS CHAR .
-DEF    VAR      l-CteDig    AS INTEGER   NO-UNDO.
+DEFINE VARIABLE l-digver        AS CHARACTER .
+DEFINE VARIABLE l-CteDig        AS INTEGER   NO-UNDO.
 
-DEF    VAR      l-RefValor2 AS CHARACTER NO-UNDO.
-DEF    VAR      l-RefValor3 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE l-RefValor2     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE l-RefValor3     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE v-id-a-procesar AS INTEGER   NO-UNDO.
+DEFINE VARIABLE vTotal          AS DECIMAL   NO-UNDO.   
+DEFINE VARIABLE l-prompago2     AS DECIMAL.
 
 /* **********************  Internal Procedures  *********************** */
 
@@ -195,8 +202,8 @@ PROCEDURE GetCartera:
      Notes:
     ------------------------------------------------------------------------------*/
     
-    DEFINE INPUT PARAMETER  lCliente  AS INT.
-    DEFINE OUTPUT PARAMETER Respuesta AS CHAR. 
+    DEFINE INPUT PARAMETER  lCliente  AS INTEGER.
+    DEFINE OUTPUT PARAMETER Respuesta AS CHARACTER. 
     DEFINE OUTPUT PARAMETER DATASET FOR dsMov.
 
     ASSIGN 
@@ -505,7 +512,7 @@ PROCEDURE GetCartera:
                         ttDetalle.FacAutorizadoPor = Factura.autorizado-por.   
                 END.
                 ELSE
-                   ASSIGN ttDetalle.PlazoFactura = (MovCliente.FecReg - Factura.FecReg).
+                    ASSIGN ttDetalle.PlazoFactura = (MovCliente.FecReg - Factura.FecReg).
             END.
             
             IF MovCliente.Id-MC = 1 THEN 
@@ -576,7 +583,7 @@ PROCEDURE GetCartera:
     DO:
         ASSIGN
             ttCartera.saldo        = l-saldo
-            ttCartera.Moneda       = l-RefValor3
+            ttCartera.Moneda       = "$"
             ttCartera.porvencer    = l-pvencer
             ttCartera.montovencido = l-saldo - l-pvencer.
     END.
@@ -589,7 +596,8 @@ PROCEDURE GetCartera:
          END. */
     ELSE 
     DO:
-        ASSIGN
+        ASSIGN 
+            ttCartera.Moneda       = "$"
             ttCartera.saldo        = 0
             ttCartera.porvencer    = 0
             ttCartera.montovencido = 0.
@@ -608,7 +616,7 @@ PROCEDURE GetCartera:
         ASSIGN
             ttCartera.id             = 2
             ttCartera.IdCliente      = lCliente
-            ttCartera.Moneda         = l-RefValor2
+            ttCartera.Moneda         = "US"
             ttCartera.saldo          = l-saldoME
             ttCartera.porvencer      = l-pvencerME
             ttCartera.montovencido   = l-saldoME - l-pvencerME
@@ -666,6 +674,42 @@ PROCEDURE GetCartera:
             ASSIGN ttDetalle.Antiguedad = ?.  
     END.
     
+    /* JASS11092025 */  
+    /* Si existe saldo en id=2 pero el id=1 está en 0, eliminar el id=1 */
+    IF CAN-FIND(FIRST ttCartera WHERE ttCartera.id = 2 AND ttCartera.saldo > 0) 
+        AND CAN-FIND(FIRST ttCartera WHERE ttCartera.id = 1 AND ttCartera.saldo = 0) THEN 
+    DO:
+    
+        FIND FIRST ttCartera WHERE ttCartera.id = 1 AND ttCartera.saldo = 0 NO-ERROR.
+        IF AVAILABLE ttCartera THEN DELETE ttCartera.
+    END.  
+      
+      
+    /* regla de prioridad */
+    IF CAN-FIND(FIRST ttCartera WHERE ttCartera.id = 1 AND ttCartera.saldo > 0) THEN 
+        v-id-a-procesar = 1.
+    ELSE IF CAN-FIND(FIRST ttCartera WHERE ttCartera.id = 2 AND ttCartera.saldo > 0) THEN 
+            v-id-a-procesar = 2.
+        ELSE 
+            v-id-a-procesar = 1. /* ninguno trae saldo, forzar id=1 */
+
+    FOR EACH ttCartera WHERE ttCartera.id = v-id-a-procesar:
+        DO TRANSACTION:                                                                             
+
+            RUN cxcb0270.p(INPUT ttCartera.IdCliente, INPUT TODAY, OUTPUT l-dia-max , OUTPUT l-prompago).
+            RUN cxcd0010.p(INPUT ttCartera.IdCliente,OUTPUT l-prompago2).
+            RUN programas/margencte.p(INPUT ttCartera.IdCliente, OUTPUT v-margen).
+            IF l-dia-max = ? THEN l-dia-max = 0.
+            RUN DepositoSantander(INPUT ttCartera.IdCliente, OUTPUT vTotal).
+            ASSIGN  
+                ttCartera.diacartera     = l-dia-max
+                ttCartera.promedio       = INTEGER(ROUND(l-prompago2, 0))
+                ttCartera.margenpromedio = v-margen
+                ttCartera.deposito       = vTotal.   
+        END.
+    END.
+    
+    /*
     IF CAN-FIND(FIRST ttCartera WHERE ttCartera.id = 1 AND ttCartera.saldo >0) THEN 
     DO:
         FOR EACH ttCartera WHERE ttCartera.id = 1:
@@ -694,6 +738,7 @@ PROCEDURE GetCartera:
                     ttCartera.margenpromedio = v-margen.
             END.
         END.
+    */   
     
     /*
    FOR EACH ttCartera  :
@@ -730,7 +775,7 @@ PROCEDURE GetCartera:
     FOR EACH ttDetalle WHERE ttDetalle.Saldo > 0.0:
 
         DO TRANSACTION:   
-          RUN GetMargenFactura(INPUT ttDetalle.Documento, OUTPUT v-margen,OUTPUT v-marneto).
+            RUN GetMargenFactura(INPUT ttDetalle.Documento, OUTPUT v-margen,OUTPUT v-marneto).
         END.
 
         FIND FIRST bf-Fact WHERE 
@@ -1012,4 +1057,35 @@ PROCEDURE GetMargenFactura:
         lMarNeto = 100.  
 
 END PROCEDURE.
+PROCEDURE DepositoSantander:
+    /* =========================================================================
+        File : 
+        Purpose : Regresa la suma de importes de los depósitos por cliente
+        Author : 
+       ========================================================================= */
 
+    DEFINE INPUT  PARAMETER ipIdCliente AS INTEGER NO-UNDO.
+    DEFINE OUTPUT PARAMETER opTotal     AS DECIMAL NO-UNDO.
+
+    DEFINE VARIABLE dSuma AS DECIMAL NO-UNDO INITIAL 0.
+
+    DEFINE BUFFER b-DepBanco FOR DepBanco. 
+    /* -----------------------------------------------------------
+       Busca los depósitos válidos de un cliente en los últimos 30 días
+       ----------------------------------------------------------- */
+   
+  
+    FOR EACH b-DepBanco
+        WHERE b-DepBanco.Id-Cliente = ipIdCliente
+        AND b-DepBanco.FecDep     >= TODAY - 180
+        AND b-DepBanco.Conciliado = FALSE
+        AND b-DepBanco.Activo     = TRUE
+        AND b-DepBanco.Tipo       <> 4  
+        NO-LOCK:
+
+        dSuma   = dSuma + b-DepBanco.Importe.
+    END.    
+    /* Retorna los resultados */
+    opTotal  = dSuma.
+  
+END PROCEDURE.

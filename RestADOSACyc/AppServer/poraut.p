@@ -1,7 +1,7 @@
 @openapi.openedge.export FILE(type="REST", executionMode="single-run", useReturnValue="false", writeDataSetBeforeImage="false").
 /*------------------------------------------------------------------------
     File        : poraut.p
-    Purpose     : Programa que regresa la cantidad de pedidos autorizados, 
+    Purpose     : Programa que regresa la cantidad de pedidos dos, 
                   cancelados y rechazados por empleado en el mes actual
     Syntax      : /PedidoEmpMes   */
  
@@ -165,7 +165,7 @@ EMPTY TEMP-TABLE ttFactura NO-ERROR.
 
 FOR EACH AutPend WHERE NOT CAN-FIND(FIRST Autorizacion WHERE Autorizacion.Id-Cliente = AutPend.Id-Cliente
                                                          AND Autorizacion.RecTipo = AutPend.RecAuto
-                                                       /*  AND Autorizacion.FecReg  = TODAY )*/ ) NO-LOCK:
+                                                         AND Autorizacion.Importe = AutPend.Importe) NO-LOCK:   
     CREATE ttFactura.
     BUFFER-COPY AutPend EXCEPT RecAuto TO ttFactura.
     ASSIGN ttFactura.RecAuto = AutPend.RecAuto.
@@ -655,7 +655,7 @@ IF Pedido.EnFirme = FALSE AND
             ACCUMULATE bfPedido.Tot (TOTAL).
             ACCUMULATE 1 (COUNT).
         END.
-        IF (ACCUM COUNT 1) > 1 THEN DO:
+        IF (ACCUM COUNT 1) > 0 THEN DO:
             ASSIGN opError = "001.- Existen" + 
                              STRING((ACCUM COUNT 1)) + 
                              " pedidos del Cliente " + 
@@ -664,7 +664,7 @@ IF Pedido.EnFirme = FALSE AND
                              STRING((ACCUM TOTAL bfPedido.Tot)) + 
                              ". Desea autorizar todos los pedidos pendientes de este Cliente?".
             RETURN.
-        END.
+        END.  
     END.
     
     RUN Autoriza(INPUT ipPedido,INPUT ipSegunda,INPUT ipTodos,INPUT ipUsuario, INPUT ipImporte,OUTPUT opError).
@@ -877,11 +877,11 @@ DEFINE OUTPUT PARAMETER opError AS CHARACTER NO-UNDO.
                    
             // 2021-10-07 - Genera Requisiciones Automaticas
             IF bfPedido.BckOrd = 3 AND bfPedido.Id-Alm = "02B" THEN 
-                RUN /usr2/adosa/procs/inva0156.p (INPUT bfPedido.Id-Pedido, 
+                RUN programas/inva0156.p (INPUT bfPedido.Id-Pedido,    
                                                   INPUT bfPedido.Resto,
                                                   INPUT 1,
-                                                  OUTPUT l-estatus).     
-            
+                                                  OUTPUT l-estatus).        
+            LOG-MANAGER:WRITE-MESSAGE("=Pedido Genero REQ= " + STRING(bfPedido.Id-Pedido) + " : " + STRING(l-estatus)).        
             /* Envia correos */
             FIND vendedor WHERE vendedor.id-vend = bfPedido.id-vend NO-LOCK NO-ERROR.
             IF AVAILABLE vendedor THEN

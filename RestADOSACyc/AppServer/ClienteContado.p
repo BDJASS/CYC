@@ -73,7 +73,9 @@ DEFINE TEMP-TABLE ttClienteVisor NO-UNDO
     FIELD CalleNo         AS CHARACTER
     FIELD NumExterior     AS CHARACTER 
     FIELD NumInterior     AS CHARACTER
-    FIELD FecAlta         AS DATE.    
+    FIELD FecAlta         AS DATE
+    FIELD NombreResponsable AS CHAR
+    FIELD NombreVendedor    AS CHAR.    
     
 DEFINE BUFFER bfCiudad FOR Ciudad. /* Buffer para validar reglas basadas en la ciudad */
 DEFINE BUFFER bCliente FOR Cliente.
@@ -299,7 +301,22 @@ PROCEDURE GetVerCliente:
             FIND Pais WHERE Pais.Id-Pais = Estado.Id-Pais NO-LOCK NO-ERROR.
             IF AVAILABLE Pais THEN ASSIGN ttClienteVisor.Pais = Pais.Nombre.        
         END.
-    END.       
+    END.  
+    FIND Resp WHERE Resp.Id-Resp = Cliente.Id-Resp NO-LOCK NO-ERROR.
+    IF AVAILABLE Resp THEN DO:
+        ttClienteVisor.NombreResponsable = Resp.Nombre.
+    END. 
+    FIND Vendedor WHERE Vendedor.Id-Vendedor = Cliente.Id-Vendedor NO-LOCK NO-ERROR.
+    IF AVAILABLE Vendedor THEN DO:
+       FIND FIRST Empleado WHERE empleado.Iniciales = Vendedor.Iniciales NO-LOCK NO-ERROR.
+       IF AVAILABLE Empleado THEN DO:
+           ttClienteVisor.NombreVendedor = empleado.Nombre.
+       END.
+       ELSE DO:
+           /* Si no está en Empleado, asignamos solo las iniciales */
+                ttClienteVisor.NombreVendedor = Vendedor.Iniciales.
+       END.
+    END.                
 END PROCEDURE.
 
 @openapi.openedge.export(type="REST", useReturnValue="false", writeDataSetBeforeImage="false").

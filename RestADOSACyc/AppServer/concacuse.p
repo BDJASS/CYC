@@ -4,17 +4,30 @@
   Funcion  : POST para conciliacion de cobranza (generacion de acuses)
   Autor    : FLC
   Fecha    : 7 DIC 2024
-*/
+*/   
 
-DEF TEMP-TABLE ttDocto                      
-    FIELD IdUser      AS CHAR
+/* ------------------------------------------------------------- 
+
+   Ticket 231 Validar Fechas Depositos con Fecha Cierre
+              Tesoreria, si se coloca una fecha deposito anterior
+              al cierre se debe colocar una fecha valida siguiente
+              JASS08092025
+ ------------------------------------------------------------------
+
+   Ticket 129 Correccion en proceso de incluido de acuse
+              para generacion de movcliente con Id-Moneda Tipo Cambio
+              Ticket de Generacion Documentos Pago con Dolares
+              JASS10092025
+  ---------------------------------------------------------------- */
+DEFINE TEMP-TABLE ttDocto                      
+    FIELD IdUser      AS CHARACTER
     FIELD IdCliente   LIKE Acuse.Id-Cliente
     FIELD IdDoc       LIKE DocAcuse.Documento
     FIELD FecReg      LIKE Factura.FecReg
     FIELD RazonSocial LIKE Factura.RazonSocial
     FIELD Total       AS DECIMAL
     FIELD SubTotal    LIKE Factura.SubTotal
-    FIELD TDoc        AS CHAR
+    FIELD TDoc        AS CHARACTER
     FIELD ImpPago     AS DECIMAL
     FIELD ImpAnt      AS DECIMAL
     FIELD Desc1       AS DECIMAL
@@ -30,27 +43,27 @@ DEF TEMP-TABLE ttDocto
     FIELD Desc11      AS DECIMAL
     FIELD Desc12      AS DECIMAL 
     FIELD IdCobrador  LIKE Cobrador.Id-Cobrador  
-    FIELD Comentarios AS CHAR     
+    FIELD Comentarios AS CHARACTER     
     INDEX Idx-Def TDoc IdDoc.
     
-DEF TEMP-TABLE ttAnticipos
+DEFINE TEMP-TABLE ttAnticipos
     FIELD IdAnticipo  LIKE Anticipo.Id-Anticipo
     FIELD ImpAplicado LIKE DetAnticipo.Importe
     FIELD IdDoc       LIKE DocAcuse.Documento
-    FIELD RelationId  AS CHAR /* Relación con ttDocto */
+    FIELD RelationId  AS CHARACTER /* Relación con ttDocto */
     INDEX Idx-Def IdDoc.
     
-DEF TEMP-TABLE ttPago     
+DEFINE TEMP-TABLE ttPago     
     FIELD FormaPago     AS INTEGER 
     FIELD Importe       AS DECIMAL
     FIELD Rec           AS RECID
     FIELD FecDep        AS DATE
-    FIELD IdBanco       AS INT
-    FIELD Cuenta        AS CHAR  
-    FIELD FolioCheque   AS CHAR
+    FIELD IdBanco       AS INTEGER
+    FIELD Cuenta        AS CHARACTER  
+    FIELD FolioCheque   AS CHARACTER
     FIELD FechaCheque   AS DATE 
-    FIELD Observaciones AS CHAR
-    FIELD RelationId    AS CHAR /* Relación con ttDocto */
+    FIELD Observaciones AS CHARACTER
+    FIELD RelationId    AS CHARACTER /* Relación con ttDocto */
     INDEX Idx-Def Importe DESCENDING.  
 
 DEFINE DATASET dsConciliacion FOR 
@@ -70,7 +83,7 @@ DEFINE TEMP-TABLE ttConc NO-UNDO
     FIELD Vencimiento AS DATE
     FIELD Saldo       AS DECIMAL
     FIELD TipoMoneda  AS CHARACTER
-    FIELD Dias        AS INT.
+    FIELD Dias        AS INTEGER.
     
 /* **********************  Internal Procedures  *********************** */
 
@@ -80,11 +93,11 @@ PROCEDURE GetFacturas:
     DEFINE INPUT PARAMETER pCliente AS INTEGER NO-UNDO.
     DEFINE OUTPUT PARAMETER TABLE FOR ttConc.
 
-    DEF VAR l-saldo LIKE MovCliente.Saldo NO-UNDO.
-    DEF VAR l-dias  AS INTEGER NO-UNDO.
-    DEF VAR i       AS INTEGER.
+    DEFINE VARIABLE l-saldo LIKE MovCliente.Saldo NO-UNDO.
+    DEFINE VARIABLE l-dias  AS INTEGER NO-UNDO.
+    DEFINE VARIABLE i       AS INTEGER.
 
-    DEF BUFFER MovCliente_bf FOR MovCliente.
+    DEFINE BUFFER MovCliente_bf FOR MovCliente.
     /* Limpiar la tabla temporal */
     EMPTY TEMP-TABLE ttConc.
 
@@ -133,37 +146,39 @@ PROCEDURE PostGeneraAcuse:
      Notes:
     ------------------------------------------------------------------------------*/
     DEFINE INPUT PARAMETER DATASET FOR dsConciliacion.
-    DEF OUTPUT PARAMETER p-Acuse AS CHAR NO-UNDO.
+    DEFINE OUTPUT PARAMETER p-Acuse AS CHARACTER NO-UNDO.
     
 
-    DEF    VAR ip-formapago    AS CHAR      NO-UNDO.
-    DEF    VAR l-Veces         AS INTEGER   NO-UNDO.
-    DEF    VAR l-NPagos        AS INTEGER   NO-UNDO.
-    DEF    VAR l-Nda           AS INTEGER   NO-UNDO.
-    DEF    VAR l-TP            AS INTEGER   NO-UNDO.
-    DEF    VAR l-recmov        AS RECID     NO-UNDO.
-    DEF    VAR l-FecVence      AS DATE      NO-UNDO.
-    DEF    VAR l-Ubic          LIKE MovCliente.Id-Ubic NO-UNDO.
+    DEFINE    VARIABLE ip-formapago    AS CHARACTER      NO-UNDO.
+    DEFINE    VARIABLE l-Veces         AS INTEGER   NO-UNDO.
+    DEFINE    VARIABLE l-NPagos        AS INTEGER   NO-UNDO.
+    DEFINE    VARIABLE l-Nda           AS INTEGER   NO-UNDO.
+    DEFINE    VARIABLE l-TP            AS INTEGER   NO-UNDO.
+    DEFINE    VARIABLE l-recmov        AS RECID     NO-UNDO.
+    DEFINE    VARIABLE l-FecVence      AS DATE      NO-UNDO.
+    DEFINE    VARIABLE l-Ubic          LIKE MovCliente.Id-Ubic NO-UNDO.
 
-    DEF    VAR l-folAcuse      LIKE Acuse.Id-Acuse NO-UNDO INITIAL "".
-    DEF    VAR l-folAntAcuse   LIKE Acuse.Id-Acuse NO-UNDO INITIAL "".
-    DEF    VAR l-ImpPagado     AS DECIMAL   NO-UNDO.
-    DEF    VAR l-ImpDeposito   AS DECIMAL   NO-UNDO.
-    DEF    VAR l-depsantander  AS DECIMAL   NO-UNDO.
-    DEF    VAR l-RestoAnt      AS DECIMAL   NO-UNDO.
-    DEF    VAR l-AntApl        AS DECIMAL   NO-UNDO.
-    DEF    VAR l-FecDep        AS DATE      NO-UNDO.
-    DEF    VAR l-Comen2        AS CHAR      NO-UNDO.
-    DEF    VAR l-Comen3        AS CHAR      NO-UNDO.
-    DEF    VAR l-UsuApl        AS CHAR      NO-UNDO INITIAL "".
-    DEF    VAR meses           AS CHARACTER EXTENT 12 NO-UNDO INITIAL 
+    DEFINE    VARIABLE l-folAcuse      LIKE Acuse.Id-Acuse NO-UNDO INITIAL "".
+    DEFINE    VARIABLE l-folAntAcuse   LIKE Acuse.Id-Acuse NO-UNDO INITIAL "".
+    DEFINE    VARIABLE l-ImpPagado     AS DECIMAL   NO-UNDO.
+    DEFINE    VARIABLE l-ImpDeposito   AS DECIMAL   NO-UNDO.
+    DEFINE    VARIABLE l-depsantander  AS DECIMAL   NO-UNDO.
+    DEFINE    VARIABLE l-RestoAnt      AS DECIMAL   NO-UNDO.
+    DEFINE    VARIABLE l-AntApl        AS DECIMAL   NO-UNDO.
+    DEFINE    VARIABLE l-FecDep        AS DATE      NO-UNDO.
+    DEFINE    VARIABLE l-Comen2        AS CHARACTER      NO-UNDO.
+    DEFINE    VARIABLE l-Comen3        AS CHARACTER      NO-UNDO.
+    DEFINE    VARIABLE l-UsuApl        AS CHARACTER      NO-UNDO INITIAL "".
+    DEFINE    VARIABLE meses           AS CHARACTER EXTENT 12 NO-UNDO INITIAL 
         ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"].
         
-    DEFINE VAR l-ValorOld      LIKE CambioCte.ValorOld.
-    DEFINE VAR l-ValorNuevo    LIKE CambioCte.ValorNuevo.
-    DEFINE VAR l-descsantander AS CHAR      NO-UNDO INITIAL "".
-    DEFINE VAR l-appsantander  AS LOGICAL   NO-UNDO INITIAL FALSE.
-   
+    DEFINE VARIABLE l-ValorOld      LIKE CambioCte.ValorOld.
+    DEFINE VARIABLE l-ValorNuevo    LIKE CambioCte.ValorNuevo.
+    DEFINE VARIABLE l-descsantander AS CHARACTER      NO-UNDO INITIAL "".
+    DEFINE VARIABLE l-appsantander  AS LOGICAL   NO-UNDO INITIAL FALSE.
+    DEFINE VARIABLE ldFechaCierre   AS DATE     NO-UNDO.        
+    DEFINE VARIABLE l-Moneda3 AS LOGICAL NO-UNDO. /* bandera */
+    DEFINE VARIABLE l-TipoCambioMon3 AS DECIMAL NO-UNDO INIT 0.
     /* VALIDACION EN LO QUE REVISAN CUANDO NO ENVIAN FORMA DE PAGO
        QUE ES CUANDO SE COMPLETA LA FACTURA CON DEVOLUCION, DESC ETC */
     FIND FIRST ttPago WHERE ttPago.FormaPago <> 0 NO-LOCK NO-ERROR.
@@ -322,7 +337,21 @@ PROCEDURE PostGeneraAcuse:
         IF AVAILABLE ttPago THEN 
             l-Comen2 = l-Comen2 + " " +  ttPago.Observaciones.
     END.
+    
 
+
+    /* Buscar fecha de cierre */
+    /* JASS08092025 */  
+FIND FIRST sysgeneral NO-LOCK NO-ERROR.
+IF AVAILABLE sysgeneral THEN
+    ASSIGN ldFechaCierre = sysgeneral.fecciedep.
+    
+    IF l-FecDep < ldFechaCierre THEN DO:
+        FIND FIRST folpoldep 
+         WHERE folpoldep.FecReg > ldFechaCierre  NO-LOCK NO-ERROR.
+         IF AVAILABLE folpoldep THEN
+         ASSIGN l-FecDep = folpoldep.FecReg.                         
+    END.                               
     
     FIND Usuario WHERE Usuario.Id-User = l-UsuApl NO-LOCK NO-ERROR.
     CREATE Acuse.
@@ -404,6 +433,8 @@ PROCEDURE PostGeneraAcuse:
         l-NPagos = l-NPagos + 1.
         RELEASE Devolucion.
     END.
+    
+    l-Moneda3 = FALSE.
     FOR EACH ttDocto WHERE ttDocto.IdCliente > 0 AND ttDocto.IdDoc > "" 
         AND  (ttDocto.TDoc = "FACT" OR ttDocto.TDoc = "CHEDEV")
         NO-LOCK BY ttDocto.IdDoc:
@@ -472,10 +503,11 @@ PROCEDURE PostGeneraAcuse:
             DocAcuse.CBDesc     = ttDocto.Desc12   // Descuento Comision Bancaria
             DocAcuse.AntApl     = l-AntApl
             l-ImpPagado         = l-ImpPagado + ttDocto.ImpPago.
-
+            
+            /* Si alguno de los DocAcuse fue con moneda 3, levanto la bandera */
+            IF DocAcuse.Id-Moneda = 3 THEN l-Moneda3 = TRUE.
+            IF DocAcuse.Id-Moneda = 3 THEN l-TipoCambioMon3 = DocAcuse.TipoCambio.   
         l-veces = l-veces + 1. 
-    
- 
     END.      
     
     /* Cambiar Calidad cuando es un documento Chedev */ 
@@ -523,13 +555,13 @@ PROCEDURE PostGeneraAcuse:
         IF l-TP = 52 THEN
             ASSIGN ip-formapago = "28".
         ELSE IF l-TP = 57 OR l-TP = 58 THEN
-                ASSIGN ip-formapago = "03".
-            ELSE IF l-TP = 60 THEN
-                    ASSIGN ip-formapago = "01".
-                ELSE IF l-TP = 61 THEN
-                        ASSIGN ip-formapago = "02".
-                    ELSE IF l-TP = 62 THEN
-                            ASSIGN ip-formapago = "04".
+            ASSIGN ip-formapago = "03".
+        ELSE IF l-TP = 60 THEN
+            ASSIGN ip-formapago = "01".
+        ELSE IF l-TP = 61 THEN
+            ASSIGN ip-formapago = "02".
+        ELSE IF l-TP = 62 THEN
+            ASSIGN ip-formapago = "04".
        
         CREATE PagoAcuse.
         ASSIGN
@@ -546,8 +578,8 @@ PROCEDURE PostGeneraAcuse:
             PagoAcuse.Cheque      = IF ttPago.FolioCheque <> "0" THEN ttPago.FolioCheque ELSE ""
             PagoAcuse.FecCheque   = IF ttPago.FechaCheque <> ? THEN ttPago.FechaCheque ELSE ?      
             PagoAcuse.CPFormaPago = ip-formapago       // "01=Efectivo,02=Cheque,03=Transferencia"
-            PagoAcuse.Id-Moneda   = 1
-            PagoAcuse.TC          = 1     
+            PagoAcuse.Id-Moneda   = IF l-Moneda3 = TRUE THEN 3 ELSE 1
+            PagoAcuse.TC          = IF l-Moneda3 = TRUE THEN l-TipoCambioMon3 ELSE 1        
             PagoAcuse.TipoCambio  = 1.
         l-ImpDeposito = l-ImpDeposito + ttPago.Importe.       
         l-NPagos = l-NPagos + 1.
@@ -566,7 +598,7 @@ PROCEDURE PostGeneraAcuse:
     MESSAGE "Despues del PAGO - l-ImpPagado=" l-ImpPagado SKIP
         "l-ImpDeposito=" l-ImpDeposito SKIP
         "l-depsantander=" l-depsantander
-        VIEW-AS ALERT-BOX INFO.  
+        VIEW-AS ALERT-BOX INFORMATION.  
         
     /* Primero validamos la condición que debe hacer que NO se ejecute el proceso */
     IF NOT (l-appsantander = FALSE AND l-TP = 61) OR l-Tp = 0 THEN 
@@ -576,7 +608,13 @@ PROCEDURE PostGeneraAcuse:
  
             IF DocAcuse.impPago > 0 THEN 
             DO: 
-            {programas/concacuse.i      
+                /* Rutina Acumula Estadistica */      
+                {programas/cxca0006.i
+            &Cliente  = Acuse.Id-Cliente
+            &Fecha    = Acuse.FecDep   
+            &renglon  = 4
+            &Importe  = DocAcuse.impPago}       
+                {programas/concacuse.i      
             &TipoMov      = l-TP     
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -584,11 +622,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.ImpPago * -1 ) " }
+            &Importe      = " ( DocAcuse.ImpPago * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.impdescPP > 0 THEN 
             DO:
-            {programas/concacuse.i 
+                {programas/concacuse.i 
             &TipoMov      = 63 
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -596,11 +636,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.impdescPP * -1 ) " }
+            &Importe      = " ( DocAcuse.impdescPP * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.impdescesp > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 68
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -608,11 +650,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.impdescEsp * -1 ) " }
+            &Importe      = " ( DocAcuse.impdescEsp * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MDDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 70
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -620,11 +664,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.MDDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MDDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.FMDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 69
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -632,11 +678,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.FMDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.FMDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MRDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 71
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -644,11 +692,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.MRDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MRDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.UPDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 72
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -656,11 +706,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.UPDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.UPDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.ManDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 74
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -668,11 +720,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.ManDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.ManDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.DPDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 66
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -680,11 +734,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.DPDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.DPDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MTDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 75
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -692,11 +748,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.MTDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MTDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.RebDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 76
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -704,11 +762,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.RebDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.RebDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MenorDesc > 0 THEN 
             DO:
-            {programas/concacuse.i 
+                {programas/concacuse.i 
             &TipoMov      = 99
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -716,11 +776,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.MenorDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MenorDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.CBDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 79
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -728,11 +790,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.CBDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.CBDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.AntApl > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 90
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -740,7 +804,9 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = TRUE
-            &Importe      = " ( DocAcuse.AntApl * -1 ) " }   
+            &Importe      = " ( DocAcuse.AntApl * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}   
             END.      
         END.   
     END. /* FIN DEL IF NOT (l-appsantander = FALSE AND l-TP = 61) */
@@ -750,7 +816,13 @@ PROCEDURE PostGeneraAcuse:
  
             IF DocAcuse.impPago > 0 THEN 
             DO: 
-            {programas/concacuse.i      
+                /* Rutina Acumula Estadistica */      
+                {programas/cxca0006.i
+            &Cliente  = Acuse.Id-Cliente
+            &Fecha    = Acuse.FecDep   
+            &renglon  = 4                 
+            &Importe  = DocAcuse.impPago}       
+                {programas/concacuse.i      
             &TipoMov      = l-TP 
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -758,11 +830,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.ImpPago * -1 ) " }
+            &Importe      = " ( DocAcuse.ImpPago * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.impdescPP > 0 THEN 
             DO:
-            {programas/concacuse.i 
+                {programas/concacuse.i 
             &TipoMov      = 63 
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -770,11 +844,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.impdescPP * -1 ) " }
+            &Importe      = " ( DocAcuse.impdescPP * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.impdescesp > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 68
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -782,11 +858,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.impdescEsp * -1 ) " }
+            &Importe      = " ( DocAcuse.impdescEsp * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MDDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 70
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -794,11 +872,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.MDDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MDDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.FMDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 69
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -806,11 +886,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.FMDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.FMDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MRDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 71
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -818,11 +900,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.MRDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MRDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.UPDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 72
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -830,11 +914,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.UPDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.UPDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.ManDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 74
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -842,11 +928,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.ManDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.ManDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.DPDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 66
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -854,11 +942,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.DPDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.DPDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MTDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 75
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -866,11 +956,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.MTDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MTDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.RebDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 76
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -878,11 +970,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.RebDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.RebDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.MenorDesc > 0 THEN 
             DO:
-            {programas/concacuse.i 
+                {programas/concacuse.i 
             &TipoMov      = 99
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -890,11 +984,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.MenorDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.MenorDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.CBDesc > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 79
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -902,11 +998,13 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.CBDesc * -1 ) " }
+            &Importe      = " ( DocAcuse.CBDesc * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}
             END.
             IF DocAcuse.AntApl > 0 THEN 
             DO:
-            {programas/concacuse.i
+                {programas/concacuse.i
             &TipoMov      = 90
             &TipoPadre    = DocAcuse.id-MC
             &FecReg       = Acuse.FecDep
@@ -914,9 +1012,11 @@ PROCEDURE PostGeneraAcuse:
             &RefSaldo     = DocAcuse.documento
             &Cliente      = Acuse.Id-Cliente
             &Afectar      = FALSE
-            &Importe      = " ( DocAcuse.AntApl * -1 ) " }   
+            &Importe      = " ( DocAcuse.AntApl * -1 ) " 
+            &Moneda       = DocAcuse.Id-Moneda
+            &Cambio       = DocAcuse.TipoCambio}   
             END.      
-        END.      
+        END.                    
         
     END.           
    

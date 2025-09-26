@@ -96,7 +96,7 @@ DEFINE TEMP-TABLE ttOrdenCompra
     FIELD Adelantado   AS LOGICAL  /* JASS23062025 */
     FIELD FecReg2      AS DATE
     FIELD FecVenc2     AS DATE 
-    FIELD DiasVencido2 AS INT
+    FIELD DiasVencido2 AS CHARACTER
     FIELD Parcial      AS LOGICAL /*JASS14082025 */.
 
 
@@ -503,159 +503,161 @@ PROCEDURE GetEstadoCtaCli:
                                         ttOrdenCompra.Parcial  = l-hayPendiente /* JASS14082025 */ 
                                         ttOrdenCompra.FecReg2  = EstPedido.FecEmb
                                         ttOrdenCompra.FecVenc2 = EstPedido.FecEmb + ttOrdenCompra.Plazo.
-
-                                    /* Aquí calculamos días vencidos con base en la fecha de input */
-                                    ttOrdenCompra.DiasVencido2 = INTEGER(ipFecha - ttOrdenCompra.FecVenc2).
-                                END.
+                                    
+                                    IF ipFecha > ttOrdenCompra.FecVenc2 THEN
+                                        ttOrdenCompra.DiasVencido2 = STRING(INTEGER(ipFecha - ttOrdenCompra.FecVenc2)).
+                                    ELSE
+                                        ttOrdenCompra.DiasVencido2 = "".       
+                                END.  
                             END. /* JASS23062025 */
                         END.
-                     END.     /* IF AVAILABLE FACTURA */
-                    END.
-                    ELSE 
-                    DO:    
+                    END.     /* IF AVAILABLE FACTURA */
+                END.
+                ELSE 
+                DO:    
+                    ASSIGN
+                        l-temporada         = ""
+                        ttOrdenCompra.Folio = MovCliente.RefSaldo.
+                END.
+                /*
+                IF Movcliente.Id-MC = 1 THEN 
+                DO:
+                    FIND Factura WHERE Factura.Id-Factura = Movcliente.RefSaldo NO-LOCK NO-ERROR.
+                    IF AVAILABLE Factura THEN
                         ASSIGN
-                            l-temporada         = ""
-                            ttOrdenCompra.Folio = MovCliente.RefSaldo.
-                    END.
-                    /*
-                    IF Movcliente.Id-MC = 1 THEN 
-                    DO:
-                        FIND Factura WHERE Factura.Id-Factura = Movcliente.RefSaldo NO-LOCK NO-ERROR.
-                        IF AVAILABLE Factura THEN
-                            ASSIGN
-                                l-temporada         = IF Factura.Id-Cond = 1
-                                              THEN "S"
-                                              ELSE IF Factura.Id-Cond = 4
-                                                   THEN "E"
-                                                   ELSE IF Factura.Id-Cond = 5
-                                                        THEN "N"
-                                                        ELSE ""
-                                ttOrdenCompra.Folio = IF Factura.Id-Fiscal <> ""
-                                           THEN Factura.Id-Fiscal
-                                           ELSE Factura.Id-Factura.
-                    END.
-                    ELSE
-                        ASSIGN
-                            l-temporada         = ""
-                            ttOrdenCompra.Folio = MovCliente.RefSaldo.
-                    */    
-                    ASSIGN                           
-                        ttOrdenCompra.OrdenCompra = (IF AVAILABLE factura THEN STRING(Factura.requisicion) ELSE "") 
-                        v-clave                   = (IF AVAILABLE factura THEN STRING(Factura.requisicion) ELSE "").
+                            l-temporada         = IF Factura.Id-Cond = 1
+                                          THEN "S"
+                                          ELSE IF Factura.Id-Cond = 4
+                                               THEN "E"
+                                               ELSE IF Factura.Id-Cond = 5
+                                                    THEN "N"
+                                                    ELSE ""
+                            ttOrdenCompra.Folio = IF Factura.Id-Fiscal <> ""
+                                       THEN Factura.Id-Fiscal
+                                       ELSE Factura.Id-Factura.
+                END.
+                ELSE
+                    ASSIGN
+                        l-temporada         = ""
+                        ttOrdenCompra.Folio = MovCliente.RefSaldo.
+                */    
+                ASSIGN                           
+                    ttOrdenCompra.OrdenCompra = (IF AVAILABLE factura THEN STRING(Factura.requisicion) ELSE "") 
+                    v-clave                   = (IF AVAILABLE factura THEN STRING(Factura.requisicion) ELSE "").
                                   
                 
-                    IF MovCliente.Id-MC = 1 THEN 
-                    DO:
-                        FIND FIRST SysGeneral NO-LOCK NO-ERROR.
-                        ASSIGN
-                            ttDatos.TasaInt = ipTasaInt / 100 / 30.42
-                            l-tasa          = ipTasaInt / 100 / 30.42.
+                IF MovCliente.Id-MC = 1 THEN 
+                DO:
+                    FIND FIRST SysGeneral NO-LOCK NO-ERROR.
+                    ASSIGN
+                        ttDatos.TasaInt = ipTasaInt / 100 / 30.42
+                        l-tasa          = ipTasaInt / 100 / 30.42.
                    
-                        IF MovCliente.Id-Moneda > 1 THEN ASSIGN l-tasa = 0.
+                    IF MovCliente.Id-Moneda > 1 THEN ASSIGN l-tasa = 0.
                     
-                        ASSIGN
-                            l-diasint             = ipFecha - (MovCliente.FecVenc)
-                            ttDatos.IntMoratorios = ttDatos.IntMoratorios + (IF l-diasint > 0
+                    ASSIGN
+                        l-diasint             = ipFecha - (MovCliente.FecVenc)
+                        ttDatos.IntMoratorios = ttDatos.IntMoratorios + (IF l-diasint > 0
                                                            THEN l-saldo * l-tasa * l-diasint
                                                            ELSE 0)                           
-                            l-totintereses        = l-totintereses + (IF l-diasint > 0
+                        l-totintereses        = l-totintereses + (IF l-diasint > 0
                                                            THEN l-saldo * l-tasa * l-diasint
                                                            ELSE 0)
-                            l-interes             = l-interes + (IF l-diasint > 0
+                        l-interes             = l-interes + (IF l-diasint > 0
                                                  THEN (l-saldo * l-tasa * l-diasint)
                                                  ELSE 0).
                     
-                        IF MovCliente.Id-Moneda > 1 THEN ttDatos.TotFacME = ttDatos.TotFacME + l-saldo.
-                        ELSE ttDatos.TotFac = ttDatos.TotFac + l-saldo.
+                    IF MovCliente.Id-Moneda > 1 THEN ttDatos.TotFacME = ttDatos.TotFacME + l-saldo.
+                    ELSE ttDatos.TotFac = ttDatos.TotFac + l-saldo.
                      
-                    END.
-               
                 END.
+               
+            END.
              
-                IF LAST-OF(MovCliente.Id-Cliente) THEN 
-                DO:
+            IF LAST-OF(MovCliente.Id-Cliente) THEN 
+            DO:
                                     
-                    FOR EACH Devolucion WHERE Devolucion.Id-Cliente = Cliente.Id-Cliente
-                        AND Devolucion.FecApl = ?
-                        AND Devolucion.FecCanc = ?
-                        AND Devolucion.TipoVenta = 3
-                        AND Devolucion.FecReg <= ipFecha NO-LOCK:
-                        CREATE ttOrdenCompra. 
-                        ASSIGN                            
-                            l-dias       = ipFecha - Devolucion.FecReg
-                            l-totDevPend = l-totDevPend + devolucion.Tot.
+                FOR EACH Devolucion WHERE Devolucion.Id-Cliente = Cliente.Id-Cliente
+                    AND Devolucion.FecApl = ?
+                    AND Devolucion.FecCanc = ?
+                    AND Devolucion.TipoVenta = 3
+                    AND Devolucion.FecReg <= ipFecha NO-LOCK:
+                    CREATE ttOrdenCompra. 
+                    ASSIGN                            
+                        l-dias       = ipFecha - Devolucion.FecReg
+                        l-totDevPend = l-totDevPend + devolucion.Tot.
                             
-                        ASSIGN
-                            ttOrdenCompra.Folio       = Devolucion.Id-Factura
-                            ttOrdenCompra.OrdenCompra = "DEV. PEND. # " + STRING(Devolucion.Id-Dev)
-                            ttOrdenCompra.FecReg      = Devolucion.FecReg
-                            ttOrdenCompra.DiasVencido = STRING(l-dias) + "d"
-                            ttOrdenCompra.DevNCR      = Devolucion.Tot.
+                    ASSIGN
+                        ttOrdenCompra.Folio       = Devolucion.Id-Factura
+                        ttOrdenCompra.OrdenCompra = "DEV. PEND. # " + STRING(Devolucion.Id-Dev)
+                        ttOrdenCompra.FecReg      = Devolucion.FecReg
+                        ttOrdenCompra.DiasVencido = STRING(l-dias) + "d"
+                        ttOrdenCompra.DevNCR      = Devolucion.Tot.
 
                         
-                        IF l-dias <= 30 THEN
-                            ASSIGN ttDatos.Tot30 = ttDatos.Tot30 - Devolucion.Tot.
-                        IF l-dias >= 31 AND l-dias <= 60 THEN
-                            ASSIGN ttDatos.Tot60 = ttDatos.Tot60 - Devolucion.Tot.
-                        IF l-dias >= 61 AND l-dias <= 90 THEN
-                            ASSIGN ttDatos.Tot90 = ttDatos.Tot90 - Devolucion.Tot.                        
-                        IF l-dias > 90 THEN
-                            ASSIGN ttDatos.Tot91 = ttDatos.Tot91 - Devolucion.Tot.
+                    IF l-dias <= 30 THEN
+                        ASSIGN ttDatos.Tot30 = ttDatos.Tot30 - Devolucion.Tot.
+                    IF l-dias >= 31 AND l-dias <= 60 THEN
+                        ASSIGN ttDatos.Tot60 = ttDatos.Tot60 - Devolucion.Tot.
+                    IF l-dias >= 61 AND l-dias <= 90 THEN
+                        ASSIGN ttDatos.Tot90 = ttDatos.Tot90 - Devolucion.Tot.                        
+                    IF l-dias > 90 THEN
+                        ASSIGN ttDatos.Tot91 = ttDatos.Tot91 - Devolucion.Tot.
                         
-                    END.
+                END.
                 
-                    IF l-hubo THEN 
-                    DO:
+                IF l-hubo THEN 
+                DO:
                     
-                        ASSIGN
-                            ttDatos.TotVencido   = ((ACCUM TOTAL l-vencido) + l-interes)
+                    ASSIGN
+                        ttDatos.TotVencido   = ((ACCUM TOTAL l-vencido) + l-interes)
                      //   ttDatos.TotDevNCR    = ((ACCUM TOTAL l-DevNCR) + l-TotDevPend)
-                            ttDatos.TotPorVencer = ((ACCUM TOTAL l-porvencido) + l-TotCargo)
-                            ttDatos.TotPagar     = ACCUM TOTAL l-apagar.
+                        ttDatos.TotPorVencer = ((ACCUM TOTAL l-porvencido) + l-TotCargo)
+                        ttDatos.TotPagar     = ACCUM TOTAL l-apagar.
                         
                      
-                        RUN /usr2/adosa/procs/cxcd0010.p (INPUT MovCliente.Id-Cliente, OUTPUT l-prompago).
+                    RUN /usr2/adosa/procs/cxcd0010.p (INPUT MovCliente.Id-Cliente, OUTPUT l-prompago).
                      
-                        ASSIGN 
-                            ttDatos.SaldoActual  = ttDatos.SaldoActual + l-totCargo - l-totDevPend
-                            ttDatos.PromedioPago = l-prompago
-                            ttDatos.DiasCartera  = (((ACCUM TOTAL l-saldo * l-dias) + (ACCUM TOTAL (l-saldo * MovCliente.TipoCambio) * l-dias))) 
+                    ASSIGN 
+                        ttDatos.SaldoActual  = ttDatos.SaldoActual + l-totCargo - l-totDevPend
+                        ttDatos.PromedioPago = l-prompago
+                        ttDatos.DiasCartera  = (((ACCUM TOTAL l-saldo * l-dias) + (ACCUM TOTAL (l-saldo * MovCliente.TipoCambio) * l-dias))) 
                                         / (ttDatos.SaldoActual + (ACCUM TOTAL l-saldo * MovCliente.TipoCambio)).
-                        l-diasmax           = (((ACCUM TOTAL l-saldo * l-dias) + (ACCUM TOTAL (l-saldo * MovCliente.TipoCambio) * l-dias))) 
-                            / (ttDatos.SaldoActual + (ACCUM TOTAL l-saldo * MovCliente.TipoCambio)).    // RNPC - 2019-08-17
+                    l-diasmax           = (((ACCUM TOTAL l-saldo * l-dias) + (ACCUM TOTAL (l-saldo * MovCliente.TipoCambio) * l-dias))) 
+                        / (ttDatos.SaldoActual + (ACCUM TOTAL l-saldo * MovCliente.TipoCambio)).    // RNPC - 2019-08-17
                             
                     
-                        ASSIGN 
-                            ttDatos.Tot30       = ttDatos.Tot30 + l-interes
-                            ttDatos.SaldoActual = ttDatos.SaldoActual + l-interes.
+                    ASSIGN 
+                        ttDatos.Tot30       = ttDatos.Tot30 + l-interes
+                        ttDatos.SaldoActual = ttDatos.SaldoActual + l-interes.
                                 
-                        IF l-diasmax < 0 THEN
-                            l-diasmax = 0.
+                    IF l-diasmax < 0 THEN
+                        l-diasmax = 0.
                      
-                        ASSIGN 
-                            l-hubo = FALSE.
-                    END. /* si hubo registros */
+                    ASSIGN 
+                        l-hubo = FALSE.
+                END. /* si hubo registros */
                  
-                    ASSIGN
-                        l-totintereses = 0  
-                        l-totncargo    = 0
-                        l-totcargo     = 0  
-                        l-total        = 0
-                        l-chedev       = 0
-                        l-chedev2      = 0  
-                        l-totDevPend   = 0  
-                        l-interes      = 0
-                        l-totalME      = 0.          
-                END.        
-            END.
+                ASSIGN
+                    l-totintereses = 0  
+                    l-totncargo    = 0
+                    l-totcargo     = 0  
+                    l-total        = 0
+                    l-chedev       = 0
+                    l-chedev2      = 0  
+                    l-totDevPend   = 0  
+                    l-interes      = 0
+                    l-totalME      = 0.          
+            END.        
+        END.
                
-        END.         
+    END.         
     
     
     //OUTPUT CLOSE.
-        DATASET dsEstadoCuenta:WRITE-JSON("LONGCHAR", opcJson, TRUE).
-        RETURN.   
+    DATASET dsEstadoCuenta:WRITE-JSON("LONGCHAR", opcJson, TRUE).
+    RETURN.   
     
 
-    END PROCEDURE.
+END PROCEDURE.
 

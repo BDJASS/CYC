@@ -140,10 +140,6 @@
       <prgs:param name="Clase" type="QUERY"/>
       <prgs:param name="Nivel" type="QUERY"/>
     </prgs:operation>
-    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PostAutorizador" produces="application/json" verb="POST">
-      <prgs:param name="Autoriza" type="QUERY"/>
-      <prgs:param name="User" type="QUERY"/>
-    </prgs:operation>
     <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PutAutorizarPedido" produces="application/json" verb="PUT">
       <prgs:param name="Pedido" type="QUERY"/>
       <prgs:param name="Segunda" type="QUERY"/>
@@ -154,6 +150,10 @@
     <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..RechazaPedido" produces="application/json" verb="DELETE">
       <prgs:param name="Pedido" type="QUERY"/>
       <prgs:param name="Usuario" type="QUERY"/>
+    </prgs:operation>
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/poraut.pidl::com.progress.openedge.pdt.bpmbindings" name="poraut..PostAutorizador" produces="application/json" verb="POST">
+      <prgs:param name="Autoriza" type="QUERY"/>
+      <prgs:param name="User" type="QUERY"/>
     </prgs:operation>
   </prgs:resource>
   <prgs:resource consumes="application/json" name="_FiltrarClientes" path="/FiltrarClientes" produces="application/json">
@@ -684,6 +684,23 @@
   <prgs:resource consumes="application/json" name="_Notificacion" path="/Notificacion" produces="application/json">
     <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/notificacion.pidl::com.progress.openedge.pdt.bpmbindings" name="notificacion..BuscaNoti" produces="application/json" verb="GET">
       <prgs:param name="Clase" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_RepAnalisisSaldos2" path="/RepAnalisisSaldos2" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/custom33.pidl::com.progress.openedge.pdt.bpmbindings" name="custom33..ReporteAnalisisSaldos" produces="application/json" verb="GET">
+      <prgs:param name="FecFin" type="QUERY"/>
+      <prgs:param name="FecIni" type="QUERY"/>
+      <prgs:param name="Dias" type="QUERY"/>
+      <prgs:param name="Clase" type="QUERY"/>
+      <prgs:param name="Zona" type="QUERY"/>
+      <prgs:param name="Resp" type="QUERY"/>
+      <prgs:param name="Cobrador" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+  <prgs:resource consumes="application/json" name="_ConsultaCambios" path="/ConsultaCambios" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestADOSACyc/.services/AppServer/BitacoraCteEmp.pidl::com.progress.openedge.pdt.bpmbindings" name="BitacoraCteEmp..GetBitacora" produces="application/json" verb="GET">
+      <prgs:param name="IdCliente" type="QUERY"/>
+      <prgs:param name="Todos" type="QUERY"/>
     </prgs:operation>
   </prgs:resource>
 </prgs:model>

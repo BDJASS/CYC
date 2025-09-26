@@ -52,6 +52,11 @@
                 para que no le salgan a cliente 3 cuando esta en contado
                 ya que no se utilizan y son muchas.
                 JASS08082025
+  
+  Ticket 184    En santander se quita las facturas de contado para el cliente
+                3 que tengan fecha de registro mayor a 60 dias
+                JASS01092025              
+                
 */
 /* ***************************  Definitions  ************************** */
 
@@ -776,7 +781,12 @@ PROCEDURE MovimientosContado:
                 Devolucion.TipoVenta = 2 NO-LOCK NO-ERROR.
             IF AVAILABLE Devolucion AND Devolucion.VtaCanc = TRUE AND
                 Devolucion.FecCanc = ? THEN NEXT.
-        
+            
+            /* JASS01092025 - Excluir cliente 3 con más de 60 días */
+            IF Remision.Id-Cliente = 3 
+            AND Remision.FecReg <> ? 
+            AND Remision.FecReg <= TODAY - 60 THEN NEXT.    
+            
             FIND FIRST ttDeposito WHERE ttDeposito.NumCliente = tt-Cliente.Id-Cliente NO-LOCK NO-ERROR.
         // Creo registro en tabla temporal
             CREATE ttDocumentos.

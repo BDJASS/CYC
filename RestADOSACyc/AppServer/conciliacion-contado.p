@@ -64,6 +64,7 @@ DEFINE BUFFER b-Pedido   FOR Pedido.
 DEFINE BUFFER b-Remision FOR Remision.
 DEFINE BUFFER b-DepBanco FOR DepBanco.
 DEFINE BUFFER b-ttDocto  FOR ttDocto.
+DEFINE BUFFER b-ttPago   FOR ttPago.           
 
 
 DEFINE NEW SHARED VARIABLE g-Origen AS CHARACTER NO-UNDO INITIAL "02B".
@@ -82,7 +83,8 @@ ASSIGN
     g-tty = STRING(TIME).
 
 
-
+ DEFINE NEW SHARED VARIABLE l-Id-Caja AS INTEGER.
+ DEFINE NEW SHARED VARIABLE l-Turno AS INTEGER.  
 /* **********************  Internal Procedures  *********************** */
 
 
@@ -120,9 +122,18 @@ PROCEDURE PostGeneraPago:
 
     DEFINE VARIABLE l-reccaja      AS RECID     NO-UNDO.  
     DEFINE VARIABLE l-PagInfo      LIKE Pedido.PagInfo NO-UNDO.
-
+    DEFINE VARIABLE  v-ncr         LIKE NCR.Id-NCR.
        
     p-Aplica = "NO APLICADO".
+    
+    /*  
+    FIND FIRST ttPago WHERE ttPago.FormaPago <> 0 NO-LOCK NO-ERROR.
+    IF NOT AVAILABLE ttPago THEN 
+    DO:
+        ASSIGN 
+            p-Aplica = "ANTICIPOS Y DESCUENTOS PUROS SE ENCUENTRAN EN MANTENIMIENTO FAVOR DE COMUNICARSE A SISTEMAS".    
+        RETURN.  
+    END.  */
     /* VALIDACION PARA REVISAR SI YA SE CONCILIO UN PAGO SANTANDER */
 
     FIND FIRST ttPago WHERE ttPago.Rec <> ? NO-LOCK NO-ERROR.
@@ -195,7 +206,7 @@ PROCEDURE PostGeneraPago:
     l-NPagos = 1.
     l-ImpPagado = 0.
 
-
+    LOG-MANAGER:WRITE-MESSAGE("=== Facturacion Contado === " + "Cliente: " + STRING(ttDocto.IdCliente) + " Usuario=" + l-UsuApl).   
     FOR EACH ttDocto WHERE ttDocto.IdCliente > 0 AND ttDocto.IdDoc > "" AND ttDocto.TDoc = "CONTADO" 
         NO-LOCK BY ttDocto.IdDoc:  
         
@@ -235,7 +246,7 @@ PROCEDURE PostGeneraPago:
                 CtlCaja.FolioIni     = (IF AVAILABLE b-CtlCaja THEN b-CtlCaja.FolioFin ELSE 0)
                 CtlCaja.FolioFin     = CtlCaja.FolioIni
                 CtlCaja.Dotacion     = 0.  
-        END.
+        END.      
     
         ASSIGN 
             l-reccaja = RECID(CtlCaja).
@@ -243,6 +254,15 @@ PROCEDURE PostGeneraPago:
         FIND CtlCaja WHERE RECID(CtlCaja) = l-reccaja EXCLUSIVE-LOCK.
 
         FIND Remision WHERE Remision.Id-Remision = ttDocto.IdDoc NO-LOCK NO-ERROR.
+        
+         /* GUARDA CAJA Y TURNO */
+         
+        
+         
+         ASSIGN 
+         l-Id-Caja   = CtlCaja.Id-Caja
+         l-Turno     = CtlCaja.Turno.
+                  
         /**********************************/
         /* REGISTRA EL MOVIMIENTO EN CAJA */
         /**********************************/    
@@ -263,7 +283,16 @@ PROCEDURE PostGeneraPago:
             MovCaja.Iniciales  = Empleado.Iniciales
             MovCaja.Id-Cajero  = Usuario.Id-Cajero
             CtlCaja.FolioFin   = (IF CtlCaja.FolioFin + 1 >= 999999 THEN 0 ELSE CtlCaja.FolioFin + 1 ).
-           
+        
+        /* ************************************************ */
+        /* REGISTRA LA ESTADISTICA POR EL PAGO DE CONTADO   */
+       /* ************************************************  */
+       
+       {cxca0006.i
+        &Cliente = Remision.Id-Cliente
+        &Importe = Remision.Tot
+        &renglon = 3
+        &fecha   = CtlCaja.FecOper }                  
         FIND b-Remision WHERE RECID(b-Remision) = RECID(Remision) EXCLUSIVE-LOCK NO-ERROR.
         IF AVAILABLE b-Remision THEN 
             ASSIGN b-Remision.Pagada = TRUE.
@@ -333,54 +362,11 @@ PROCEDURE PostGeneraPago:
             END.
             RELEASE Anticipo.   
         END.
-
-        FOR EACH b-ttDocto WHERE b-ttDocto.IdCliente > 0 AND b-ttDocto.IdDoc > "" AND b-ttDocto.TDoc = "DEV" 
-            NO-LOCK BY b-ttDocto.IdDoc:
-            FIND Devolucion WHERE Devolucion.Id-Dev = INTEGER(b-ttDocto.IdDoc) 
-                EXCLUSIVE-LOCK NO-ERROR.
-            IF NOT AVAILABLE Devolucion THEN NEXT.
-    
-            ASSIGN 
-                Devolucion.Documento  = Remision.Id-Remision
-                Devolucion.FecApl     = TODAY
-                Devolucion.UsuarioApl = l-UsuApl.
-        
-            CREATE DetMovC.   
-            ASSIGN 
-                DetMovC.Id-Caja     = MovCaja.Id-Caja
-                DetMovC.Folio       = MovCaja.Folio
-                DetMovC.Id-tp       = 0                      
-                DetMovC.Id-Banco    = IF ttPago.IdBanco <> 0 THEN ttPago.IdBanco 
-                                     ELSE IF ttPago.FormaPago = 57 THEN 25
-                                     ELSE IF ttPago.FormaPago = 58 THEN 1
-                                     ELSE 0 
-                DetMovC.CtaCheq     = IF ttPago.Cuenta <> "0" THEN ttPago.Cuenta  ELSE "" 
-                DetMovC.Cheque      = IF ttPago.FolioCheque <> "0" THEN ttPago.FolioCheque ELSE ""
-                DetMovC.FecCheque   = IF ttPago.FechaCheque <> ? THEN ttPago.FechaCheque ELSE ?                     
-                DetMovC.Mov         = 'D'                        
-                DetMovC.Sec         = l-NPagos
-                DetMovC.MontoRec    = b-ttDocto.ImpPago   
-                DetMovC.MontoCambio = 0                       
-                DetMovC.TC          = 1
-                DetMovC.MontoPago   = b-ttDocto.ImpPago
-                DetMovC.Id-Dev      = Devolucion.Id-Dev
-                DetMovC.PagInfo     = l-PagInfo
-                l-NPagos            = l-NPagos + 1.
-            RELEASE Devolucion.
-            
-            
-            RUN GeneraNCR(INPUT Remision.Id-Remision, INPUT l-UsuApl,OUTPUT v-status).
-            IF NOT v-Status THEN 
-            DO:
-                /* Solo logueas o sigues con la siguiente */
-                LOG-MANAGER:WRITE-MESSAGE("Saltando remisión EN DEV " + Remision.Id-Remision + " porque no aplica NCR").
-            END.  
-        END.
-
-        l-TP = 0.
+         l-TP = 0.
         l-ImpDeposito = 0.
         l-ImpPagado   = 0.
         FOR EACH ttPago WHERE ttPago.Importe > 0 BY ttPago.Importe DESCENDING:
+              
             IF l-TP = 0 THEN
                 l-TP = ttPago.FormaPago.
            
@@ -419,11 +405,59 @@ PROCEDURE PostGeneraPago:
                 l-NPagos            = l-NPagos + 1.
             l-ImpDeposito = l-ImpDeposito + ttPago.Importe.
             l-ImpPagado = l-ImpPagado + ttPago.Importe.    
+        END.  
+        RELEASE CtlCaja.   
+        FOR EACH b-ttDocto WHERE b-ttDocto.IdCliente > 0 AND b-ttDocto.IdDoc > "" AND b-ttDocto.TDoc = "DEV" 
+            NO-LOCK BY b-ttDocto.IdDoc:
+            FIND FIRST b-ttpago NO-LOCK NO-ERROR.    
+            FIND Devolucion WHERE Devolucion.Id-Dev = INTEGER(b-ttDocto.IdDoc) 
+                EXCLUSIVE-LOCK NO-ERROR.
+            IF NOT AVAILABLE Devolucion THEN NEXT.
+    
+            ASSIGN 
+                Devolucion.Documento  = Remision.Id-Remision
+                Devolucion.FecApl     = TODAY
+                Devolucion.UsuarioApl = l-UsuApl.
+        
+            CREATE DetMovC.   
+            ASSIGN 
+                DetMovC.Id-Caja     = MovCaja.Id-Caja
+                DetMovC.Folio       = MovCaja.Folio
+                DetMovC.Id-tp       = 0                      
+                DetMovC.Id-Banco    = IF b-ttPago.IdBanco <> 0 THEN b-ttPago.IdBanco 
+                                     ELSE IF b-ttPago.FormaPago = 57 THEN 25
+                                     ELSE IF b-ttPago.FormaPago = 58 THEN 1
+                                     ELSE 0 
+                DetMovC.CtaCheq     = IF b-ttPago.Cuenta <> "0" THEN b-ttPago.Cuenta  ELSE "" 
+                DetMovC.Cheque      = IF b-ttPago.FolioCheque <> "0" THEN b-ttPago.FolioCheque ELSE ""
+                DetMovC.FecCheque   = IF b-ttPago.FechaCheque <> ? THEN b-ttPago.FechaCheque ELSE ?                     
+                DetMovC.Mov         = 'D'                        
+                DetMovC.Sec         = l-NPagos
+                DetMovC.MontoRec    = b-ttDocto.ImpPago   
+                DetMovC.MontoCambio = 0                       
+                DetMovC.TC          = 1
+                DetMovC.MontoPago   = b-ttDocto.ImpPago
+                DetMovC.Id-Dev      = Devolucion.Id-Dev
+                DetMovC.PagInfo     = l-PagInfo
+                l-NPagos            = l-NPagos + 1.
+            
+            
+            
+           RUN GeneraNCR(INPUT Remision.Id-Remision, INPUT l-UsuApl,OUTPUT v-status,OUTPUT v-ncr).
+            IF NOT v-Status THEN 
+            DO:
+                /* Solo logueas o sigues con la siguiente */
+                LOG-MANAGER:WRITE-MESSAGE("Saltando remisión EN DEV " + Remision.Id-Remision + " porque no aplica NCR").
+            END.  
+            IF v-Status = TRUE THEN Devolucion.Id-NCR = v-ncr.
+            RELEASE Devolucion. 
         END.
+
+       
     
         RELEASE b-DepBanco.       
         RELEASE b-Remision.   
-        RELEASE CtlCaja.    
+           
         p-Aplica = "APLICADO".  
         
         /* 
@@ -568,6 +602,7 @@ PROCEDURE GeneraNCR:
     DEFINE INPUT PARAMETER l-Remision      LIKE Remision.Id-Remision   NO-UNDO.
     DEFINE INPUT PARAMETER l-UsuApl        AS CHARACTER                NO-UNDO.
     DEFINE OUTPUT PARAMETER l-Status       AS LOGICAL   NO-UNDO. /* TRUE=Generado, FALSE=No aplica */
+    DEFINE OUTPUT PARAMETER p-nncr   AS CHARACTER NO-UNDO.
     DEFINE VARIABLE l-NCR    LIKE NCR.Id-NCR NO-UNDO INITIAL "100N".
     DEFINE VARIABLE l-TotNCR LIKE NCR.Tot NO-UNDO.
     DEFINE VARIABLE l-TotD   LIKE NCR.Tot NO-UNDO.
@@ -580,7 +615,8 @@ PROCEDURE GeneraNCR:
     DEFINE VARIABLE l-sub    AS DECIMAL   DECIMALS 2.
     DEFINE VARIABLE l-recmov AS RECID     NO-UNDO.
 
-     ASSIGN l-Status = TRUE. 
+     ASSIGN l-Status = TRUE
+            p-nncr   = "". 
     /* --- INICIO LOG --- */
     LOG-MANAGER:WRITE-MESSAGE("=== INICIO GeneraNCR ===").
     LOG-MANAGER:WRITE-MESSAGE("Parámetros: Remision=" + STRING(l-Remision) + " Usuario=" + l-UsuApl).
@@ -730,7 +766,7 @@ PROCEDURE GeneraNCR:
     /* Antes de finalizar */
     LOG-MANAGER:WRITE-MESSAGE("NCR generado: " + l-nncr).
     LOG-MANAGER:WRITE-MESSAGE("=== FIN GeneraNCR ==="). 
- 
+    ASSIGN p-nncr = l-nncr.
   
 END PROCEDURE.
 

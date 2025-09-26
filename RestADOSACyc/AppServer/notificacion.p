@@ -1,7 +1,7 @@
-@openapi.openedge.export FILE(type="REST", executionMode="single-run", useReturnValue="false", writeDataSetBeforeImage="false").
+@openapi.openedge.export (type="REST", executionMode="single-run", useReturnValue="false", writeDataSetBeforeImage="false").
 
 /*------------------------------------------------------------------------
-    File        : notificacion.p
+    File        : notificacion.p   
     Purpose     : 
 
     Syntax      :/Notificacion
@@ -111,6 +111,7 @@ DEFINE TEMP-TABLE ttNotificacion NO-UNDO
 /* **********************  Internal Procedures  *********************** */
 DEFINE BUFFER bfPagare FOR Pagare.
 DEFINE BUFFER bfttFactura FOR ttFactura.
+DEFINE BUFFER bfAutPend FOR AutPend.
          
 DEFINE VARIABLE vTotalFacturas AS INTEGER NO-UNDO.
 DEFINE VARIABLE vTotalPedidos AS INTEGER NO-UNDO.
@@ -138,25 +139,24 @@ EMPTY TEMP-TABLE ttFactura      NO-ERROR.
 /* ---------------- FACTURAS ---------------- */
     LOG-MANAGER:WRITE-MESSAGE("Cargando facturas pendientes...").
  
+
 FOR EACH AutPend WHERE NOT CAN-FIND(FIRST Autorizacion WHERE Autorizacion.Id-Cliente = AutPend.Id-Cliente
-                                                         AND Autorizacion.RecTipo = AutPend.RecAuto) NO-LOCK:
-    CREATE ttFactura.
+                                                         AND Autorizacion.RecTipo = AutPend.RecAuto) NO-LOCK:   
+    CREATE ttFactura.     
     BUFFER-COPY AutPend EXCEPT RecAuto TO ttFactura.
     ASSIGN ttFactura.RecAuto = AutPend.RecAuto.
 
     FOR EACH bfttFactura WHERE bfttFactura.recauto = ttFactura.recauto NO-LOCK.
-        ACCUMULATE 11 (COUNT).
-    END.
-    IF (ACCUM COUNT 11) > 1 THEN DO:
+        ACCUMULATE 1 (COUNT).      
+    END.   
+    IF (ACCUM COUNT 1) > 1 THEN DO:
         DELETE ttFactura.
         NEXT.
-    END.   
+    END.      
     
     IF ttFactura.Id-Cliente = 0 THEN
         NEXT.
-END.
-INPUT CLOSE.
-
+END.     
 
 /* Aquí obtenemos el total de facturas cargadas */
 ASSIGN vTotalFacturas = 0.

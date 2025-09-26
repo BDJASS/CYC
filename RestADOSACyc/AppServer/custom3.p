@@ -42,6 +42,10 @@
  Ticket 1212  Agregar el Filtro Cobrador
  JASS14072025
  
+ TICKET 76  Integrar una columna con los Importes
+            De los depositos santander (creditos) de los
+            clientes que esten en el Reporte.
+            JASS22082025
   */
 
 /* ***************************  Definitions  ************************** */
@@ -183,26 +187,27 @@ DEF TEMP-TABLE w-saldo LIKE Saldo
     
 
 DEF TEMP-TABLE ttAnalisis NO-UNDO
-    FIELD IdPrincipal    AS INT
-    FIELD ClienteId      LIKE Saldo.Sec
-    FIELD Clase          LIKE ClaseCte.Descr
-    FIELD RazonSocial    AS CHARACTER
-    FIELD Saldo          AS DECIMAL
-    FIELD Noventa        AS DECI      FORMAT "-zzz,zzz,zz9"
-    FIELD Venta          AS DECIMAL
-    FIELD Cargo          AS DECIMAL
-    FIELD Pago           AS DECIMAL   
-    FIELD Credito        AS DECIMAL
-    FIELD SaldoFin       AS DECIMAL
-    FIELD Resp           LIKE Resp.Nombre
-    FIELD Plazo          LIKE Cliente.Plazo
-    FIELD LineaCredito   LIKE Cliente.Limite   
-    FIELD TipoMon        AS CHAR
-    FIELD Anticipo       AS INT
-    FIELD MontoPag       AS DECIMAL
-    FIELD DiasCartera    AS INTEGER  
-    FIELD PromedioPago   AS DEC       FORMAT "-zzz,zzz,zz9.99"
-    FIELD MargenPromedio AS DEC. /* JASS0407202 */ 
+    FIELD IdPrincipal     AS INT
+    FIELD ClienteId       LIKE Saldo.Sec
+    FIELD Clase           LIKE ClaseCte.Descr
+    FIELD RazonSocial     AS CHARACTER
+    FIELD Saldo           AS DECIMAL
+    FIELD Noventa         AS DECI      FORMAT "-zzz,zzz,zz9"
+    FIELD Venta           AS DECIMAL
+    FIELD Cargo           AS DECIMAL
+    FIELD Pago            AS DECIMAL   
+    FIELD Credito         AS DECIMAL
+    FIELD SaldoFin        AS DECIMAL
+    FIELD Resp            LIKE Resp.Nombre
+    FIELD Plazo           LIKE Cliente.Plazo
+    FIELD LineaCredito    LIKE Cliente.Limite   
+    FIELD TipoMon         AS CHAR
+    FIELD Anticipo        AS INT
+    FIELD MontoPag        AS DECIMAL
+    FIELD DiasCartera     AS INTEGER  
+    FIELD PromedioPago    AS DEC       FORMAT "-zzz,zzz,zz9.99"
+    FIELD MargenPromedio  AS DEC /* JASS0407202 */ 
+    FIELD ImporteDeposito AS DEC. /* JASS22082025 */
  
 
  
@@ -228,6 +233,7 @@ DEFINE NEW SHARED VARIABLE g-tty AS CHARACTER NO-UNDO.
 ASSIGN 
     g-tty = STRING(TIME).
 
+DEFINE VARIABLE vTotal AS DECIMAL NO-UNDO.  /* JASS22082025 */
 
 @openapi.openedge.export(type="REST", useReturnValue="false", writeDataSetBeforeImage="false").
 PROCEDURE ReporteAnalisisSaldos:
@@ -320,9 +326,12 @@ PROCEDURE ReporteAnalisisSaldos:
         l-timptotal2 = 0. 
        
 
-
+    FOR EACH w-Saldo WHERE w-saldo.Tty = g-tty EXCLUSIVE-LOCK:
+        DELETE w-Saldo.
+    END.      
        
-    FOR EACH Cliente WHERE (l-clase = 0 OR Cliente.Id-ClaseCte = l-clase) 
+    FOR EACH Cliente WHERE (l-clase = 0 OR Cliente.Id-ClaseCte = l-clase)
+        //AND Cliente.Id-Cliente = 49833 
         AND  (l-zona = "" OR l-zona = "0" OR CAN-DO(l-zona, STRING(Cliente.Id-Zona)))
         AND  (l-resp = 0 OR Cliente.Id-Resp = l-resp) 
         AND   (pCobrador = 0 OR Cliente.Id-Cobrador = pCobrador )NO-LOCK:    
@@ -351,7 +360,7 @@ PROCEDURE ReporteAnalisisSaldos:
                 IF l-diascap > 0 THEN 
                 DO:
                    
-                    IF l-diascap = 0 OR (l-fecha - MovCliente.FecVenc) >= l-diascap THEN 
+                    IF l-diascap = 0 OR (l-fecha - MovCliente.FecVenc) > l-diascap THEN 
                     DO:
                         ACCUMULATE MovCliente.Saldo (TOTAL BY MovCliente.Id-Cliente).
                     END.
@@ -370,7 +379,7 @@ PROCEDURE ReporteAnalisisSaldos:
             END. /* del for each b-mov */
  
             ASSIGN 
-                l-saldo = MovCliente.Importe + (ACCUM TOTAL b-mov.Importe).
+                l-saldo = MovCliente.Saldo + (ACCUM TOTAL b-mov.Importe).
     
             IF Movcliente.Id-Moneda > 1 THEN        // RNPC - 2019-07-22 
                 ASSIGN l-saldo = l-saldo * MovCliente.TipoCambio.
@@ -389,8 +398,8 @@ PROCEDURE ReporteAnalisisSaldos:
               IF (l-fecha - MovCliente.FecVenc) > l-diascap THEN 
                   ACCUMULATE l-saldo (TOTAL BY MovCliente.ID-cliente).  */
                     
-            IF l-diascap = 0 OR (l-fecha - MovCliente.FecVenc) >= l-diascap THEN 
-                ACCUMULATE l-saldo (TOTAL BY MovCliente.ID-cliente).  
+            IF l-diascap = 0 OR (l-fecha - MovCliente.FecVenc) > l-diascap THEN 
+                ACCUMULATE l-saldo (TOTAL BY MovCliente.ID-cliente).   
             
     
             IF LAST-OF (MovCliente.Id-Cliente) AND 
@@ -415,7 +424,9 @@ PROCEDURE ReporteAnalisisSaldos:
                 END. /* por importe */  
             END. /* del last-of Movcliente */
         END. /* del for each Movcliente */.
-
+        
+      //  MESSAGE "Saldo" l-saldo.
+        
         ASSIGN 
             l-totcli = 0.
         
@@ -433,7 +444,7 @@ PROCEDURE ReporteAnalisisSaldos:
         END.
     END. /* si es por importe */
 
-    FOR EACH w-Saldo WHERE w-Saldo.Tty = g-tty EXCLUSIVE-LOCK,
+    FOR EACH w-Saldo WHERE w-Saldo.Tty = g-tty  EXCLUSIVE-LOCK,
         EACH Cliente WHERE Cliente.Id-Cliente = w-saldo.Sec NO-LOCK
         BREAK BY w-Saldo.Acomodo: 
         ASSIGN 
@@ -731,7 +742,7 @@ PROCEDURE ReporteAnalisisSaldos:
                     ACCUMULATE l-dias * l-saldo (TOTAL).
             END. /* del bb-mov */
             
-           
+            // IF l-90dias = 0 THEN NEXT. 
             ASSIGN 
                 l-sumanodep = 0.
             FOR EACH Acuse WHERE Acuse.Id-cliente = w-Saldo.Sec
@@ -870,7 +881,7 @@ PROCEDURE ReporteAnalisisSaldos:
                     l-diascartera = 0 
                     l-simbolo     = "".   // RNPC -2019-07-23
             END. /* si el l-indice = 1 entonces es detallado  (del if indice = 1) */
-        END. /* del LAST-OF(MovCliente) */
+        END. /* del LAST-OF(MovCliente) */     
     
         IF ((l-totclih = 25 OR LAST(w-saldo.Acomodo )) AND l-indice <> 2) OR
             ((l-totcorteh = 25 OR LAST( w-saldo.Acomodo )) AND l-indice = 2) THEN 
@@ -909,16 +920,25 @@ PROCEDURE ReporteAnalisisSaldos:
         ttDatos.TotalCteDC     = ROUND((l-tsalxant2 / l-tsaltotal2),1)
         ttDatos.TotalCteDPP    = ROUND((l-timpxant2 / l-timptotal2),1).
     
-    FOR EACH ttAnalisis :        
-        RUN programas/margencte.p(INPUT ttAnalisis.ClienteId, OUTPUT v-margen).
-        ASSIGN 
-            ttAnalisis.MargenPromedio = ROUND(v-margen, 2).
-    END.  
-/*        
-FOR EACH ttAnalisis Where ttAnalisis.Noventa = 0 :
-    Delete ttAnalisis.
-END.   */     
-RETURN. 
+    FOR EACH ttAnalisis WHERE  ttAnalisis.ClienteId > 0 :        
+        /*  RUN programas/margencte.p(INPUT ttAnalisis.ClienteId, OUTPUT v-margen).  */
+        RUN DepositoSantander(INPUT ttAnalisis.ClienteId, OUTPUT vTotal). 
+        ASSIGN             
+            ttAnalisis.MargenPromedio  = 0   //  ROUND(v-margen, 2)
+            ttAnalisis.ImporteDeposito = vTotal.  
+    END.                   
+    /*        
+    FOR EACH ttAnalisis Where ttAnalisis.Noventa = 0 :
+        Delete ttAnalisis.
+    END.   */ 
+    /* Log de inicio */
+    LOG-MANAGER:WRITE-MESSAGE(
+        SUBSTITUTE("/AnalisisDeSaldos [TERMINA] >>> Finaliza Reporte | Fecha Inicio: &1 | Fecha Fin: &2 | FechaHora: &3",
+        l-fechaini,
+        l-fecha,  
+        STRING(NOW))
+        ).         
+    RETURN. 
 END PROCEDURE.     
 
 PROCEDURE "cxcd0016.p":
@@ -1114,4 +1134,36 @@ PROCEDURE "cxcd0010.p":
 
 
 END PROCEDURE.
-    
+
+PROCEDURE DepositoSantander:
+    /* =========================================================================
+        File : 
+        Purpose : Regresa la suma de importes de los depósitos por cliente
+        Author : 
+       ========================================================================= */
+
+    DEFINE INPUT  PARAMETER ipIdCliente AS INTEGER NO-UNDO.
+    DEFINE OUTPUT PARAMETER opTotal     AS DECIMAL NO-UNDO.
+
+    DEFINE VARIABLE dSuma AS DECIMAL NO-UNDO INITIAL 0.
+
+    DEFINE BUFFER b-DepBanco FOR DepBanco. 
+    /* -----------------------------------------------------------
+       Busca los depósitos válidos de un cliente en los últimos 30 días
+       ----------------------------------------------------------- */
+   
+  
+        FOR EACH b-DepBanco
+            WHERE b-DepBanco.Id-Cliente = ipIdCliente
+            AND b-DepBanco.FecDep     >= TODAY - 30
+            AND b-DepBanco.Conciliado = FALSE
+            AND b-DepBanco.Activo     = TRUE
+            AND b-DepBanco.Tipo       <> 4  
+            NO-LOCK:
+
+            dSuma   = dSuma + b-DepBanco.Importe.
+        END.    
+    /* Retorna los resultados */
+    opTotal  = dSuma.
+  
+END PROCEDURE.   

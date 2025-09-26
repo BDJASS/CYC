@@ -20,16 +20,16 @@ DEFINE TEMP-TABLE ttVendedor NO-UNDO
     FIELD IdVendedor AS CHARACTER
     FIELD Nombre     AS CHARACTER
     FIELD TipoVen    AS INTEGER
-    INDEX idx-vend   IdVendedor ASCENDING.
+    INDEX idx-vend IdVendedor ASCENDING.
 
 /* ***************************  Internal Procedures *********************** */
 
 @openapi.openedge.export(type="REST", useReturnValue="false", writeDataSetBeforeImage="false").
 PROCEDURE GetVendedorEmpleado:
-/*------------------------------------------------------------------------------
- Purpose     : Retorna los vendedores activos con el nombre del empleado relacionado.
- Notes       : Si se envía TipoVen, filtra por tipo además de los activos.
-------------------------------------------------------------------------------*/
+    /*------------------------------------------------------------------------------
+     Purpose     : Retorna los vendedores activos con el nombre del empleado relacionado.
+     Notes       : Si se envía TipoVen, filtra por tipo además de los activos.
+    ------------------------------------------------------------------------------*/
     DEFINE INPUT  PARAMETER TipoVen AS INTEGER NO-UNDO.
     DEFINE OUTPUT PARAMETER TABLE FOR ttVendedor.
 
@@ -37,18 +37,27 @@ PROCEDURE GetVendedorEmpleado:
 
     /* Siempre tomar vendedores activos */
     FOR EACH Vendedor NO-LOCK WHERE Vendedor.Activo
-                                AND (Vendedor.TipoVen = TipoVen OR TipoVen = ?):
-        
+        AND (Vendedor.TipoVen = TipoVen OR TipoVen = ?),
+        /*  AND CAN-FIND(FIRST Cliente OF Vendedor WHERE Cliente.Activo)*/ 
+        EACH Cliente NO-LOCK  USE-INDEX Idx-Vendedor
+        WHERE Cliente.Id-Vendedor = Vendedor.Id-Vendedor
+        AND Cliente.Id-Cliente > 11 
+        AND Cliente.Activo: 
+
         /* Buscar el empleado relacionado por Iniciales */
         FIND FIRST Empleado  WHERE Empleado.Iniciales = Vendedor.Iniciales 
-        NO-LOCK NO-ERROR.
+            NO-LOCK NO-ERROR.
 
         /* Crear el registro en la tabla temporal */
-        CREATE ttVendedor.
-        ASSIGN
-            ttVendedor.IdVendedor = Vendedor.Id-Vendedor
-            ttVendedor.Nombre     = IF AVAILABLE Empleado THEN Empleado.Nombre ELSE "Sin asignar"
-            ttVendedor.TipoVen    = Vendedor.TipoVen.
-    END.
+        FIND FIRST ttVendedor WHERE ttVendedor.IdVendedor = Vendedor.Id-Vendedor NO-LOCK NO-ERROR.
+        IF NOT AVAILABLE ttVendedor THEN 
+        DO:
+            CREATE ttVendedor.
+            ASSIGN
+                ttVendedor.IdVendedor = Vendedor.Id-Vendedor
+                ttVendedor.Nombre     = IF AVAILABLE Empleado THEN Empleado.Nombre ELSE "Sin asignar"
+                ttVendedor.TipoVen    = Vendedor.TipoVen.
+        END. 
+    END.  
 
 END PROCEDURE.

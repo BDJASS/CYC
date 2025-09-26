@@ -14,7 +14,22 @@ IF {&TipoPadre} <> {&TipoMov} THEN DO:
   IF AVAILABLE Adosa.MovCliente THEN DO:
     ASSIGN l-recmov = RECID(adosa.MovCliente).
     FIND adosa.MovCliente WHERE RECID(adosa.MovCliente) = l-recmov 
-				EXCLUSIVE-LOCK NO-ERROR.
+				EXCLUSIVE-LOCK  NO-WAIT  NO-ERROR.    
+    IF NOT AVAILABLE adosa.MovCliente THEN
+        DO:
+            ASSIGN   
+                p-Acuse = "Existe un bloqueo por otra aplicacion en la BD".  
+                
+                   /* Log manual para saber quién es */
+    LOG-MANAGER:WRITE-MESSAGE(
+        SUBSTITUTE(
+            "Bloqueo detectado en MovCliente RefSaldo:&1 TipoPadre:&2 Cliente:&3",
+            {&RefSaldo}, {&TipoPadre}, {&Cliente}  
+        )
+    ).     
+            RETURN.
+        END.     
+				
     ASSIGN 
       adosa.MovCliente.Saldo     = adosa.MovCliente.Saldo + 
 				   ( IF {&afectar} THEN
@@ -37,8 +52,8 @@ ASSIGN adosa.MovCliente.FecReg      = {&FecReg}
        adosa.MovCliente.Id-Cliente  = {&Cliente}
        adosa.MovCliente.Afectado    = {&Afectar}
        adosa.MovCliente.Id-Ubic     = l-Ubic
-       adosa.MovCliente.Id-Moneda   = 1
-       adosa.MovCliente.TipoCambio  = 1.
+       adosa.MovCliente.Id-Moneda   = {&Moneda}
+       adosa.MovCliente.TipoCambio  = {&Cambio}.   
 IF {&TipoPadre} = {&TipoMov} THEN
   ASSIGN adosa.MovCliente.Saldo     = {&Importe}.
 

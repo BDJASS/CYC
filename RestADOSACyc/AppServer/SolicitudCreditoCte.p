@@ -364,9 +364,22 @@ PROCEDURE EditarSolicitud:
     DEFINE OUTPUT PARAMETER l-StatusCode AS INTEGER NO-UNDO. /* Parámetro para el código de estado HTTP */
     /* Procesar cada registro en la tabla temporal */
     
+    
+    /* Log de entrada al procedimiento */
+    LOG-MANAGER:WRITE-MESSAGE(
+        SUBSTITUTE(">>> /ClienteCredito[PUT] Entrando a EditarSolicitud a las &1", STRING(NOW))
+        ).
+    
     IF CAN-FIND(FIRST ttCteCred) THEN 
     DO:
         FOR EACH ttCteCred:
+            
+            /* Log del IdUser recibido */
+            LOG-MANAGER:WRITE-MESSAGE(
+                SUBSTITUTE("Procesando ttCteCred: IdCliente = &1 | IdUser = &2 | FechaHora = &3",
+                STRING(ttCteCred.IdCliente), ttCteCred.IdUser, STRING(NOW))
+                ).
+            
             /* Validar que la solicitud exista en la tabla Cliente */
             FIND FIRST bfCliente WHERE bfCliente.Id-Cliente  = ttCteCred.IdCliente  EXCLUSIVE-LOCK NO-ERROR.
             IF NOT AVAILABLE bfCliente THEN 
@@ -384,7 +397,6 @@ PROCEDURE EditarSolicitud:
                 l-StatusCode = 400. /* Código de error HTTP 400 Bad Request */
                 RETURN.
             END.
-        
             /* Razon Social - RFC - Correo valida que no existan en BD */ 
             IF ttCteCred.RazonSocial <> "" THEN 
             DO:
@@ -547,20 +559,23 @@ PROCEDURE EditarSolicitud:
             END.
             IF ttCteCred.NumInt <> "0" THEN 
             DO:
-            
+                LOG-MANAGER:WRITE-MESSAGE(
+                    SUBSTITUTE("Creando CambioCte con IdUser = '&1'", ttCteCred.IdUser)
+                    ).  
+
                 CREATE CambioCte.
                 ASSIGN
                     CambioCte.Id-Cliente = bfCliente.Id-Cliente
-                    CambioCte.Id-User    = ttCteCred.IdUser
+                    CambioCte.Id-User    = STRING(ttCteCred.IdUser)                           
                     CambioCte.Descr      = "NumInt"
                     CambioCte.ValorNuevo = ttCteCred.NumInt
-                    CambioCte.ValorOld   = bfCliente.NumInt
+                    CambioCte.ValorOld   = bfCliente.NumInt  
                     CambioCte.FecReg     = TODAY
                     CambioCte.Hora       = TIME
                     CambioCte.Campo      = 110. 
                 ASSIGN
                     bfCliente.NumInt  = ttCteCred.NumInt
-                    bfCliente.CalleNo = TRIM(bfCliente.Calle + " " + ttCteCred.NumInt + " " + bfCliente.NumExt).    
+                    bfCliente.CalleNo = TRIM(bfCliente.Calle + " " + ttCteCred.NumInt + " " + bfCliente.NumExt).  
             END.  
         
             IF ttCteCred.SitioWeb <> "" THEN 
@@ -646,7 +661,7 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.LocalPropio = ttCteCred.LocalPropio.
             END.    
-            IF ttCteCred.EsAsociado <> ? THEN 
+            IF ttCteCred.EsAsociado <> ? THEN    
             DO:
             
                 CREATE CambioCte.
@@ -727,7 +742,7 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.Tel1 = ttCteCred.Telefono. 
             END.   
-            IF ttCteCred.RegimenFiscal <> "" THEN 
+            IF ttCteCred.RegimenFiscal <> ? AND ttCteCred.RegimenFiscal <> "" THEN 
             DO:
                 CREATE CambioCte.
                 ASSIGN
@@ -742,8 +757,8 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.Id-RFiscal = ttCteCred.RegimenFiscal.    
             END.   
-            IF ttCteCred.FormasPago <> "" THEN 
-            DO:
+            IF ttCteCred.FormasPago <> ? AND ttCteCred.FormasPago <> "0"   THEN      
+            DO:                
                 CREATE CambioCte.
                 ASSIGN
                     CambioCte.Id-Cliente = bfCliente.Id-Cliente
@@ -757,7 +772,7 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.FEFormaPago = ttCteCred.FormasPago.
             END.
-            IF ttCteCred.UsoCFDI <> "" THEN 
+            IF ttCteCred.UsoCFDI <> ? AND ttCteCred.UsoCFDI <> "0" THEN 
             DO:
                 CREATE CambioCte.
                 ASSIGN
@@ -771,7 +786,7 @@ PROCEDURE EditarSolicitud:
                     CambioCte.Campo      = 19.  
                 ASSIGN 
                     bfCliente.Id-UsoCFDI = ttCteCred.UsoCFDI.  
-            END.
+            END.             
             IF ttCteCred.CPFiscal <> "" THEN 
             DO: 
                 CREATE CambioCte.
@@ -787,9 +802,9 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.CP = ttCteCred.CPFiscal.
             END.   
-            IF ttCteCred.CapitalSocial <> 0 THEN 
-            DO:
-                CREATE CambioCte.
+            IF ttCteCred.CapitalSocial <> ? AND ttCteCred.CapitalSocial <> 0 THEN 
+            DO:          
+                CREATE CambioCte.                               
                 ASSIGN
                     CambioCte.Id-Cliente = bfCliente.Id-Cliente
                     CambioCte.Id-User    = ttCteCred.IdUser
@@ -802,7 +817,7 @@ PROCEDURE EditarSolicitud:
                 ASSIGN 
                     bfCliente.CapitalSocial = ttCteCred.CapitalSocial.   
             END.
-            IF ttCteCred.CapitalContable <> 0 THEN 
+            IF ttCteCred.CapitalContable <> ? AND ttCteCred.CapitalContable <> 0 THEN 
             DO:
                 CREATE CambioCte.
                 ASSIGN
@@ -812,15 +827,15 @@ PROCEDURE EditarSolicitud:
                     CambioCte.ValorNuevo = STRING(ttCteCred.CapitalContable) 
                     CambioCte.ValorOld   = STRING(bfCliente.CapitalContable) 
                     CambioCte.FecReg     = TODAY
-                    CambioCte.Hora       = TIME
+                    CambioCte.Hora       = TIME                     
                     CambioCte.Campo      = 210.
                 ASSIGN 
                     bfCliente.CapitalContable = ttCteCred.CapitalContable.
             END.   
             IF ttCteCred.RequiereOC <> ? THEN 
-            DO:
+            DO:                                            
                 CREATE CambioCte.
-                ASSIGN
+                ASSIGN                          
                     CambioCte.Id-Cliente = bfCliente.Id-Cliente
                     CambioCte.Id-User    = ttCteCred.IdUser
                     CambioCte.Descr      = "OCyes"
@@ -1017,8 +1032,8 @@ PROCEDURE EditarSolicitud:
         FOR EACH ttDatosContacto:
     
             FIND FIRST bfCteEmp WHERE bfCteEmp.Id-Cliente  = ttDatosContacto.IdCliente
-                                  AND bfCteEmp.Nombre       = ttDatosContacto.Nombre
-                                  EXCLUSIVE-LOCK NO-ERROR.
+                AND bfCteEmp.Nombre       = ttDatosContacto.Nombre
+                EXCLUSIVE-LOCK NO-ERROR.
             IF NOT AVAILABLE bfCteEmp THEN 
             DO:
                 ASSIGN   

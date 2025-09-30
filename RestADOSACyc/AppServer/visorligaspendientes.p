@@ -47,6 +47,7 @@ PROCEDURE GetLigasPendientes:
     FOR EACH MITResp WHERE MITResp.Response = "approved" AND MITResp.Estatus = FALSE AND MITResp.TpOperation = "VENTA" NO-LOCK:
         
     
+        IF adosa.MITResp.Id-Pedido <> "" THEN 
         FIND FIRST Pedido WHERE Pedido.Id-Pedido = MITResp.Reference NO-LOCK NO-ERROR.
   
         IF AVAILABLE Pedido THEN 
@@ -87,13 +88,28 @@ PROCEDURE GetLigasPendientes:
                 
             END.  
             ELSE DO:
+                
+                FIND FIRST Remision WHERE Remision.Id-Remision = MITResp.Reference NO-LOCK NO-ERROR.
+                
+                CREATE ttDatosLiga.
+            ASSIGN 
+                ttDatosLiga.ImporteFacturado = IF AVAILABLE Remision THEN Remision.Tot ELSE 0                
+                ttDatosLiga.FecPago       = MITResp.Fecha
+                ttDatosLiga.HorPago       = STRING(MITResp.hora, "HH:MM")
+                ttDatosLiga.Referencia    = MITResp.Reference
+                ttDatosLiga.IdCliente     = Remision.Id-Cliente
+                ttDatosLiga.RazonSocial   = Remision.RazonSocial 
+                ttDatosLiga.ImportePagado = MITResp.Amount
+                ttDatosLiga.Tipo = "Contado". 
+                /*
                 CREATE ttDatosLiga.
                 ASSIGN 
                        ttDatosLiga.ImporteFacturado = 0
                         ttDatosLiga.FecPago       = MITResp.Fecha
                         ttDatosLiga.HorPago       = STRING(MITResp.hora, "HH:MM")
                         ttDatosLiga.Referencia    = MITResp.Reference                        
-                        ttDatosLiga.ImportePagado = MITResp.Amount.                        
+                        ttDatosLiga.ImportePagado = MITResp.Amount.      
+                 */                     
                 RELEASE ttDatosLiga.
             END.              
         END.   
